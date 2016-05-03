@@ -1,0 +1,16 @@
+{
+    "_comment": "This is a sample config file.",
+
+    "default_language": "py",
+    "templates": "{src_dir}/templates",
+
+    "commands": {
+	"py":{
+	    "test_cmd": "python {fname}"
+	},
+	"c":{
+	    "compile_cmd": "gcc -Wall -lm -o {oname} {fname}",
+	    "test_cmd": "./{oname}"
+	}
+    }
+}
