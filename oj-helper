@@ -18,6 +18,7 @@ import time
 if sys.version_info.major == 2:
     input = raw_input
 
+
 def input_lines(prompt=None):
     lines = ""
     if prompt:
@@ -31,12 +32,14 @@ def input_lines(prompt=None):
 
 
 re_sample_comment = re.compile(r"/\* (.+) \*/")
+
+
 def parse_sample(qid):
     try:
-        with open(qid+".sample", "r") as f:
+        with open(qid + ".sample", "r") as f:
             sample_txt = f.read()
     except IOError:
-        print("File '{}' not found.".format(qid+".sample"))
+        print("File '{}' not found.".format(qid + ".sample"))
         sys.exit(1)
     test_list = []
     sample_id = None
@@ -52,14 +55,14 @@ def parse_sample(qid):
         test_list[-1][1] = test_list[-1][1][:-1]
     return test_list
 
+
 def add_sample(qid, test_id, test_str, out_str):
-    with open(qid+".sample", "a") as f:
+    with open(qid + ".sample", "a") as f:
         f.write("/* Test {} */\n".format(test_id))
         f.write(test_str)
         f.write("/* Output {} */\n".format(test_id))
         f.write(out_str)
     print("Added test case {}.".format(test_id))
-
 
 
 def setup(args, config):
@@ -70,7 +73,7 @@ def setup(args, config):
     template_dir = config["templates"].format(src_dir=script_dir)
     template_file = os.path.join(template_dir, "template.{}".format(args.lang))
     script_path = args.file_name if args.file_name is not None \
-                  else "{}.{}".format(pnumber, args.lang)
+        else "{}.{}".format(pnumber, args.lang)
     script_path = os.path.join(dirname, script_path)
     sample_path = os.path.join(dirname, "{}.sample".format(pnumber))
     if not os.path.exists(dirname):
@@ -89,27 +92,28 @@ def setup(args, config):
 def add_test(args, qid):
     test_list = parse_sample(qid)
     test_id = int(test_list[-1][0][7:]) + 1 if len(test_list) > 0 else 0
-    test_str = input_lines(prompt = "TestCase {}:".format(test_id))
-    out_str = input_lines(prompt = "Output {}:".format(test_id))
+    test_str = input_lines(prompt="TestCase {}:".format(test_id))
+    out_str = input_lines(prompt="Output {}:".format(test_id))
     add_sample(qid, test_id, test_str, out_str)
 
 
-def run_cmd(cmd, input_line = None, timeout = 10):
+def run_cmd(cmd, input_line=None, timeout=10):
     tle = False
     t = time.time()
-    p = subprocess.Popen(cmd, shell = True,
-                         stdin = subprocess.PIPE,
-                         stdout = subprocess.PIPE,
-                         stderr = subprocess.PIPE,
-                         universal_newlines = True)
+    p = subprocess.Popen(cmd, shell=True,
+                         stdin=subprocess.PIPE,
+                         stdout=subprocess.PIPE,
+                         stderr=subprocess.PIPE,
+                         universal_newlines=True)
     stdout_data, stderr_data = ("", "")
     try:
-        stdout_data, stderr_data = p.communicate(timeout = timeout,
-                                                 input = input_line)
+        stdout_data, stderr_data = p.communicate(timeout=timeout,
+                                                 input=input_line)
     except subprocess.TimeoutExpired:
         tle = True
     ts = time.time() - t
     return (p.returncode, stdout_data, stderr_data, ts, tle)
+
 
 def run_test(args, config, qid):
     if args.file_name:
@@ -135,11 +139,11 @@ def run_test(args, config, qid):
         if returncode != 0:
             sys.exit(returncode)
     test_cmd = config["commands"][args.lang]["test_cmd"]
-    test_cmd = test_cmd.format(fname = fname, oname = oname)
+    test_cmd = test_cmd.format(fname=fname, oname=oname)
     test_list = parse_sample(qid)
     for i in range(0, len(test_list), 2):
         test_case_in = test_list[i][1]
-        test_case_out = test_list[i+1][1]
+        test_case_out = test_list[i + 1][1]
         test_n = i // 2
         returncode, stdout, stderr, t, tle = run_cmd(test_cmd,
                                                      input_line=test_case_in,
@@ -150,7 +154,8 @@ def run_test(args, config, qid):
         elif tle:
             print_line += "Timeout Error! (returned {})".format(returncode)
         elif t > args.time_limit:
-            print_line += "Time Limit Expired! (returned {})".format(returncode)
+            print_line += "Time Limit Expired! (returned {})".format(
+                returncode)
         elif stdout != test_case_out:
             print_line += "Failed! (returned {})".format(returncode)
         else:
@@ -185,11 +190,11 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("mode", type=str,
                         choices=["s", "setup", "a", "add-test", "t", "test"])
-    parser.add_argument("-l", "--lang", default = None)
+    parser.add_argument("-l", "--lang", default=None)
     parser.add_argument("-c", "--contest-name", default="")
     parser.add_argument("-p", "--problem-number", default=None)
     parser.add_argument("-f", "--file-name", default=None)
-    parser.add_argument("-t", "--time-limit", type = int, default = 2)
+    parser.add_argument("-t", "--time-limit", type=int, default=2)
     args = parser.parse_args()
 
     script_dir = os.path.dirname(os.path.realpath(__file__))

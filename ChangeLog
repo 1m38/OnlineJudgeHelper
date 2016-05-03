@@ -2,4 +2,5 @@
 
 	* oj-helper: とりあえず動くようになった
 	(setup): simlinkから動かしたときに、templateがコピーされない問題修正
+	autopep8
 
