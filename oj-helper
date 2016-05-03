@@ -66,7 +66,7 @@ def setup(args, config):
     contest = args.contest_name
     pnumber = args.problem_number
     dirname = os.path.join(contest, pnumber)
-    script_dir = os.path.dirname(os.path.abspath(__file__))
+    script_dir = os.path.dirname(os.path.realpath(__file__))
     template_dir = config["templates"].format(src_dir=script_dir)
     template_file = os.path.join(template_dir, "template.{}".format(args.lang))
     script_path = args.file_name if args.file_name is not None \

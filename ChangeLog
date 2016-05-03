@@ -1,4 +1,5 @@
 2016-05-03    <masaya@FS-VB-arch>
 
 	* oj-helper: とりあえず動くようになった
+	(setup): simlinkから動かしたときに、templateがコピーされない問題修正
 
