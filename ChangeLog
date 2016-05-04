@@ -1,5 +1,7 @@
 2016-05-04    <masaya@FS-VB-arch>
 
+	* templates/template.py: 更新
+
 	* oj-helper: 出力に色をつける
 
 	* oj-helper (chk_output_floatError):

@@ -1,5 +1,4 @@
 # coding: utf-8
-"""docstring"""
 
 from __future__ import print_function
 from __future__ import unicode_literals
@@ -15,4 +14,4 @@ import re
 import array
 import bisect
 
-
+input_values = map(int, input().split(" "))
