@@ -1,3 +1,8 @@
+2016-05-04    <masaya@FS-VB-arch>
+
+	* oj-helper (chk_output_floatError):
+	出力をfloatで行う場合、1e-8未満の誤差を無視する
+
 2016-05-03    <masaya@FS-VB-arch>
 
 	* oj-helper: とりあえず動くようになった

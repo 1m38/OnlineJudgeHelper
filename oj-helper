@@ -18,6 +18,8 @@ import time
 if sys.version_info.major == 2:
     input = raw_input
 
+re_sample_comment = re.compile(r"/\* (.+) \*/")
+re_isFloat = re.compile('^[+-]?(\d*\.\d+|\d+\.?\d*)([eE][+-]?\d+|)\Z')
 
 def input_lines(prompt=None):
     lines = ""
@@ -29,9 +31,6 @@ def input_lines(prompt=None):
             lines += "\n"
         except EOFError:
             return lines
-
-
-re_sample_comment = re.compile(r"/\* (.+) \*/")
 
 
 def parse_sample(qid):
@@ -114,6 +113,19 @@ def run_cmd(cmd, input_line=None, timeout=10):
     ts = time.time() - t
     return (p.returncode, stdout_data, stderr_data, ts, tle)
 
+def chk_output_floatError(stdout, expect):
+    result = True
+    for lo, le in zip(stdout.split("\n"), expect.split("\n")):
+        if re_isFloat.match(le):
+            flo = float(lo)
+            fle = float(le)
+            if abs(flo - fle) < 1e-8:
+                result *= True
+            else:
+                result *= False
+        else:
+            result *= lo == le
+        return result
 
 def run_test(args, config, qid):
     if args.file_name:
@@ -150,16 +162,20 @@ def run_test(args, config, qid):
                                                      timeout=args.time_limit)
         print_line = "Test {}: ".format(test_n)
         if returncode != 0:
-            print_line += "Runtime Error! (returned {})".format(returncode)
+            print_line += "Runtime Error!"
         elif tle:
-            print_line += "Timeout Error! (returned {})".format(returncode)
+            print_line += "Timeout Error!"
         elif t > args.time_limit:
             print_line += "Time Limit Expired! (returned {})".format(
                 returncode)
         elif stdout != test_case_out:
-            print_line += "Failed! (returned {})".format(returncode)
+            if chk_output_floatError(stdout, test_case_out):
+                print_line += "Succeeded! (float error)"
+            else:
+                print_line += "Failed!"
         else:
-            print_line += "Succeeded! (returned {})".format(returncode)
+            print_line += "Succeeded!"
+        print_line += " (exit code: {})".format(returncode)
         print(print_line)
         print("Time: {:.2f}s / {:.1f}s".format(t, args.time_limit))
         if stdout:
