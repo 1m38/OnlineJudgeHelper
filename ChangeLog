@@ -1,5 +1,7 @@
 2016-05-04    <masaya@FS-VB-arch>
 
+	* oj-helper: 出力に色をつける
+
 	* oj-helper (chk_output_floatError):
 	出力をfloatで行う場合、1e-8未満の誤差を無視する
 

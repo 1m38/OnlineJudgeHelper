@@ -161,13 +161,13 @@ def run_test(args, config, qid):
                                                      input_line=test_case_in,
                                                      timeout=args.time_limit)
         print_line = "Test {}: ".format(test_n)
+        print_line += "\033[33;1m"
         if returncode != 0:
             print_line += "Runtime Error!"
         elif tle:
             print_line += "Timeout Error!"
         elif t > args.time_limit:
-            print_line += "Time Limit Expired! (returned {})".format(
-                returncode)
+            print_line += "Time Limit Expired!"
         elif stdout != test_case_out:
             if chk_output_floatError(stdout, test_case_out):
                 print_line += "Succeeded! (float error)"
@@ -175,17 +175,18 @@ def run_test(args, config, qid):
                 print_line += "Failed!"
         else:
             print_line += "Succeeded!"
+        print_line += "\033[0m"
         print_line += " (exit code: {})".format(returncode)
         print(print_line)
         print("Time: {:.2f}s / {:.1f}s".format(t, args.time_limit))
         if stdout:
             print("---- stdout")
-            print(stdout)
+            print("\033[32m" + stdout + "\033[0m")
         if stderr:
             print("---- stderr")
-            print(stderr)
+            print("\033[32m" + stderr + "\033[0m")
         print("---- expected output")
-        print(test_case_out)
+        print("\033[32m" + test_case_out + "\033[0m")
 
 
 def main(args, config):
