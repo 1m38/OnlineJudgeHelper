@@ -2,6 +2,7 @@
 
 	* oj-helper (run_test): float/ValueErrorの扱い
 	出力文字列をfloatに変換できなければFailed扱いに
+	(run_test): 出力:結果の色を分ける
 
 	* config.json: c言語(採点対応): ファイル名をquotationする
 

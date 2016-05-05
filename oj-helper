@@ -143,7 +143,7 @@ def run_test(args, config, qid):
         if returncode == 0:
             print("Compile Succeeded!")
         else:
-            print("Compile Error!")
+            print("\033[31;1mCompile Error!\033[0m")
         print("cmd: {}".format(compile_cmd))
         if stdout:
             print("---- stdout")
@@ -164,21 +164,19 @@ def run_test(args, config, qid):
                                                      input_line=test_case_in,
                                                      timeout=args.time_limit)
         print_line = "Test {}: ".format(test_n)
-        print_line += "\033[33;1m"
         if returncode != 0:
-            print_line += "Runtime Error!"
+            print_line += "\033[31;1mRuntime Error!\033[0m"
         elif tle:
-            print_line += "Timeout Error!"
+            print_line += "\033[31;1mTimeout Error!\033[0m"
         elif t > args.time_limit:
-            print_line += "Time Limit Expired!"
+            print_line += "\033[31;1mTime Limit Expired!\033[0m"
         elif stdout != test_case_out:
             if chk_output_floatError(stdout, test_case_out):
-                print_line += "Succeeded! (float error)"
+                print_line += "\033[33;1mSucceeded! (float error)\033[0m"
             else:
-                print_line += "Failed!"
+                print_line += "\033[31;1mFailed!\033[0m"
         else:
-            print_line += "Succeeded!"
-        print_line += "\033[0m"
+            print_line += "\033[33;1mSucceeded!\033[0m"
         print_line += " (exit code: {})".format(returncode)
         print(print_line)
         print("Time: {:.2f}s / {:.1f}s".format(t, args.time_limit))
