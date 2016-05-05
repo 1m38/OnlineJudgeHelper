@@ -1,3 +1,7 @@
+2016-05-05    <masaya@FS-VM-arch>
+
+	* config.json: c言語(採点対応): ファイル名をquotationする
+
 2016-05-04    <masaya@FS-VB-arch>
 
 	* templates/template.py: 更新
