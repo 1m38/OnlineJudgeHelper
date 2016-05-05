@@ -1,5 +1,8 @@
 2016-05-05    <masaya@FS-VM-arch>
 
+	* oj-helper (run_test): float/ValueErrorの扱い
+	出力文字列をfloatに変換できなければFailed扱いに
+
 	* config.json: c言語(採点対応): ファイル名をquotationする
 
 2016-05-04    <masaya@FS-VB-arch>

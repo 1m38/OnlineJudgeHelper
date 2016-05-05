@@ -117,8 +117,11 @@ def chk_output_floatError(stdout, expect):
     result = True
     for lo, le in zip(stdout.split("\n"), expect.split("\n")):
         if re_isFloat.match(le):
-            flo = float(lo)
-            fle = float(le)
+            try:
+                flo = float(lo)
+                fle = float(le)
+            except ValueError:
+                return False
             if abs(flo - fle) < 1e-8:
                 result *= True
             else:
