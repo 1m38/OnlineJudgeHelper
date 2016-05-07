@@ -1,3 +1,7 @@
+2016-05-07    <masaya@FS-VB-arch-ng>
+
+	* oj-helper (run_cmd): timeout時にstdout/errを出力できるように
+
 2016-05-05    <masaya@FS-VM-arch>
 
 	* oj-helper (run_test): float/ValueErrorの扱い

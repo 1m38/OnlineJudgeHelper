@@ -110,6 +110,8 @@ def run_cmd(cmd, input_line=None, timeout=10):
                                                  input=input_line)
     except subprocess.TimeoutExpired:
         tle = True
+        p.kill()
+        stdout_data, stderr_data = p.communicate()
     ts = time.time() - t
     return (p.returncode, stdout_data, stderr_data, ts, tle)
 
@@ -164,10 +166,10 @@ def run_test(args, config, qid):
                                                      input_line=test_case_in,
                                                      timeout=args.time_limit)
         print_line = "Test {}: ".format(test_n)
-        if returncode != 0:
-            print_line += "\033[31;1mRuntime Error!\033[0m"
-        elif tle:
+        if tle:
             print_line += "\033[31;1mTimeout Error!\033[0m"
+        elif returncode != 0:
+            print_line += "\033[31;1mRuntime Error!\033[0m"
         elif t > args.time_limit:
             print_line += "\033[31;1mTime Limit Expired!\033[0m"
         elif stdout != test_case_out:
