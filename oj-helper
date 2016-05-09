@@ -20,6 +20,7 @@ if sys.version_info.major == 2:
 
 re_sample_comment = re.compile(r"/\* (.+) \*/")
 re_isFloat = re.compile('^[+-]?(\d*\.\d+|\d+\.?\d*)([eE][+-]?\d+|)\Z')
+re_isInt = re.compile('^(\d+)\n?\Z')
 
 def input_lines(prompt=None):
     lines = ""
@@ -115,22 +116,22 @@ def run_cmd(cmd, input_line=None, timeout=10):
     ts = time.time() - t
     return (p.returncode, stdout_data, stderr_data, ts, tle)
 
-def chk_output_floatError(stdout, expect):
+def chk_output_floatError(stdout, expect, err = 1e-4):
     result = True
     for lo, le in zip(stdout.split("\n"), expect.split("\n")):
-        if re_isFloat.match(le):
+        if re_isFloat.match(le) and not re_isInt.match(le):  # 答がint -> 完全一致
             try:
                 flo = float(lo)
                 fle = float(le)
             except ValueError:
                 return False
-            if abs(flo - fle) < 1e-8:
+            if abs(flo - fle) / max(1, abs(fle)) < err:
                 result *= True
             else:
                 result *= False
         else:
             result *= lo == le
-        return result
+    return result
 
 def run_test(args, config, qid):
     if args.file_name:
