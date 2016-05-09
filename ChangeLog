@@ -3,6 +3,7 @@
 	* oj-helper: float errorの扱い修正
 	答えがfloatである(かつintでない)行: 相対誤差1e-4まで許容
 	intの行: 完全一致のみ
+	相対誤差をargで指定できるように
 
 2016-05-07    <masaya@FS-VB-arch-ng>
 

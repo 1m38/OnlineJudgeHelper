@@ -116,7 +116,7 @@ def run_cmd(cmd, input_line=None, timeout=10):
     ts = time.time() - t
     return (p.returncode, stdout_data, stderr_data, ts, tle)
 
-def chk_output_floatError(stdout, expect, err = 1e-4):
+def chk_output_floatError(stdout, expect, err):
     result = True
     for lo, le in zip(stdout.split("\n"), expect.split("\n")):
         if re_isFloat.match(le) and not re_isInt.match(le):  # 答がint -> 完全一致
@@ -174,7 +174,8 @@ def run_test(args, config, qid):
         elif t > args.time_limit:
             print_line += "\033[31;1mTime Limit Expired!\033[0m"
         elif stdout != test_case_out:
-            if chk_output_floatError(stdout, test_case_out):
+            if chk_output_floatError(stdout, test_case_out,
+                                     err=args.float_error):
                 print_line += "\033[33;1mSucceeded! (float error)\033[0m"
             else:
                 print_line += "\033[31;1mFailed!\033[0m"
@@ -216,6 +217,7 @@ if __name__ == "__main__":
     parser.add_argument("-p", "--problem-number", default=None)
     parser.add_argument("-f", "--file-name", default=None)
     parser.add_argument("-t", "--time-limit", type=int, default=2)
+    parser.add_argument("-e", "--float-error", type=float, default=1e-4)
     args = parser.parse_args()
 
     script_dir = os.path.dirname(os.path.realpath(__file__))
