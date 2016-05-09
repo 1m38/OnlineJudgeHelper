@@ -18,6 +18,24 @@ import time
 if sys.version_info.major == 2:
     input = raw_input
 
+color = {"reset"    : "\033[0m",
+         "bBlack"   : "\033[30;1m",
+         "bRed"     : "\033[31;1m",
+         "bGreen"   : "\033[32;1m",
+         "bYellow"  : "\033[33;1m",
+         "bBlue"    : "\033[34;1m",
+         "bMagenta" : "\033[35;1m",
+         "bCyan"    : "\033[36;1m",
+         "bWhite"   : "\033[37;1m",
+         "Black"    : "\033[30m",
+         "Red"      : "\033[31m",
+         "Green"    : "\033[32m",
+         "Yellow"   : "\033[33m",
+         "Blue"     : "\033[34m",
+         "Magenta"  : "\033[35m",
+         "Cyan"     : "\033[36m",
+         "White"    : "\033[37m"}
+
 re_sample_comment = re.compile(r"/\* (.+) \*/")
 re_isFloat = re.compile('^[+-]?(\d*\.\d+|\d+\.?\d*)([eE][+-]?\d+|)\Z')
 re_isInt = re.compile('^(\d+)\n?\Z')
@@ -144,9 +162,9 @@ def run_test(args, config, qid):
         compile_cmd = compile_cmd.format(fname=fname, oname=oname)
         returncode, stdout, stderr, t, tle = run_cmd(compile_cmd, timeout=None)
         if returncode == 0:
-            print("Compile Succeeded!")
+            print(color["Yellow"] + "Compile Succeeded!" + color["reset"])
         else:
-            print("\033[31;1mCompile Error!\033[0m")
+            print(color["bRed"] + "Compile Error!" + color["reset"])
         print("cmd: {}".format(compile_cmd))
         if stdout:
             print("---- stdout")
@@ -168,30 +186,30 @@ def run_test(args, config, qid):
                                                      timeout=args.time_limit)
         print_line = "Test {}: ".format(test_n)
         if tle:
-            print_line += "\033[31;1mTimeout Error!\033[0m"
+            print_line += color["bRed"] + "Timeout Error!" + color["reset"]
         elif returncode != 0:
-            print_line += "\033[31;1mRuntime Error!\033[0m"
+            print_line += color["bRed"] + "Runtime Error!" + color["reset"]
         elif t > args.time_limit:
-            print_line += "\033[31;1mTime Limit Expired!\033[0m"
+            print_line += color["bRed"] + "Time Limit Expired!" + color["reset"]
         elif stdout != test_case_out:
             if chk_output_floatError(stdout, test_case_out,
                                      err=args.float_error):
-                print_line += "\033[33;1mSucceeded! (float error)\033[0m"
+                print_line += color["bYellow"] + "Succeeded! (float error)" + color["reset"]
             else:
-                print_line += "\033[31;1mFailed!\033[0m"
+                print_line += color["bRed"] + "Failed!" + color["reset"]
         else:
-            print_line += "\033[33;1mSucceeded!\033[0m"
+            print_line += color["bYellow"] + "Succeeded!" + color["reset"]
         print_line += " (exit code: {})".format(returncode)
         print(print_line)
         print("Time: {:.2f}s / {:.1f}s".format(t, args.time_limit))
         if stdout:
             print("---- stdout")
-            print("\033[32m" + stdout + "\033[0m")
+            print(color["Green"] + stdout + color["reset"])
         if stderr:
             print("---- stderr")
-            print("\033[32m" + stderr + "\033[0m")
+            print(color["Green"] + stderr + color["reset"])
         print("---- expected output")
-        print("\033[32m" + test_case_out + "\033[0m")
+        print(color["Green"] + test_case_out + color["reset"])
 
 
 def main(args, config):

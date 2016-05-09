@@ -1,5 +1,7 @@
 2016-05-09  Masaya Uno  <masaya@FS-MC-pca308>
 
+	* oj-helper: 結果表示色の管理を辞書で行う
+
 	* oj-helper: float errorの扱い修正
 	答えがfloatである(かつintでない)行: 相対誤差1e-4まで許容
 	intの行: 完全一致のみ
