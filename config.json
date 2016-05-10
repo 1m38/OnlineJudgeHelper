@@ -11,6 +11,10 @@
 	"c":{
 	    "compile_cmd": "gcc -Wall -lm -o {oname} \"{fname}\"",
 	    "test_cmd": "./{oname}"
+	},
+	"cpp":{
+	    "compile_cmd": "g++ -Wall -lm -o {oname} \"{fname}\"",
+	    "test_cmd": "./{oname}"
 	}
     }
 }

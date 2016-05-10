@@ -1,3 +1,11 @@
+2016-05-11    <masaya@FS-VB-arch-ng>
+
+	* templates/template.cpp: 作成
+
+	* config.json: cpp用設定を追加
+
+	* templates/template.py (array2d): array2dを追加
+
 2016-05-09  Masaya Uno  <masaya@FS-MC-pca308>
 
 	* oj-helper: 結果表示色の管理を辞書で行う

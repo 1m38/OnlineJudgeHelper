@@ -14,4 +14,7 @@ import re
 import array
 import bisect
 
-input_values = map(int, input().split(" "))
+def array2d(d1, d2, init = None):
+    return [[init for _ in range(d1)] for _ in range(d2)]
+
+a, b = map(int, input().split(" "))
