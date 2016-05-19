@@ -160,12 +160,12 @@ def run_test(args, config, qid):
     if "compile_cmd" in config["commands"][args.lang]:
         compile_cmd = config["commands"][args.lang]["compile_cmd"]
         compile_cmd = compile_cmd.format(fname=fname, oname=oname)
+        print("cmd: {}".format(compile_cmd))
         returncode, stdout, stderr, t, tle = run_cmd(compile_cmd, timeout=None)
         if returncode == 0:
             print(color["Yellow"] + "Compile Succeeded!" + color["reset"])
         else:
             print(color["bRed"] + "Compile Error!" + color["reset"])
-        print("cmd: {}".format(compile_cmd))
         if stdout:
             print("---- stdout")
             print(stdout)
