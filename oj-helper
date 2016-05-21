@@ -103,8 +103,9 @@ def setup(args, config):
         with open(script_path, "w") as f:
             f.write("")
     # 空のsampleファイル作成
-    with open(sample_path, "w") as f:
-        f.write("")
+    if not os.path.exists(sample_path):
+        with open(sample_path, "w") as f:
+            f.write("")
 
 
 def add_test(args, qid):
@@ -162,10 +163,13 @@ def run_test(args, config, qid):
         compile_cmd = compile_cmd.format(fname=fname, oname=oname)
         print("cmd: {}".format(compile_cmd))
         returncode, stdout, stderr, t, tle = run_cmd(compile_cmd, timeout=None)
+        print_line = ""
         if returncode == 0:
-            print(color["Yellow"] + "Compile Succeeded!" + color["reset"])
+            print_line += color["Yellow"] + "Compile Succeeded!" + color["reset"]
         else:
-            print(color["bRed"] + "Compile Error!" + color["reset"])
+            print_line += color["bRed"] + "Compile Error!" + color["reset"]
+        print_line += " (exit code: {})".format(returncode)
+        print(print_line)
         if stdout:
             print("---- stdout")
             print(stdout)
