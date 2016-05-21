@@ -1,5 +1,7 @@
 2016-05-21    <masaya@FS-VB-arch-ng>
 
+	* templates/template.cpp: 更新(typedef long long ll)
+
 	* oj-helper (setup): すでにsampleファイルがある場合、空ファイルで上書きしない
 	(run_test): compile結果にもexit code表示
 
