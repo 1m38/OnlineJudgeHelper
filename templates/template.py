@@ -15,6 +15,6 @@ import array
 import bisect
 
 def array2d(d1, d2, init = None):
-    return [[init for _ in range(d1)] for _ in range(d2)]
+    return [[init for _ in range(d2)] for _ in range(d1)]
 
 a, b = map(int, input().split(" "))
