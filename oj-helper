@@ -116,7 +116,7 @@ def add_test(args, qid):
     add_sample(qid, test_id, test_str, out_str)
 
 
-def run_cmd(cmd, input_line=None, timeout=10):
+def run_cmd(cmd, input_line, timeout):
     tle = False
     t = time.time()
     p = subprocess.Popen(cmd, shell=True,
@@ -126,7 +126,8 @@ def run_cmd(cmd, input_line=None, timeout=10):
                          universal_newlines=True)
     stdout_data, stderr_data = ("", "")
     try:
-        stdout_data, stderr_data = p.communicate(timeout=timeout,
+        tl = timeout * 2
+        stdout_data, stderr_data = p.communicate(timeout=tl,
                                                  input=input_line)
     except subprocess.TimeoutExpired:
         tle = True
@@ -162,7 +163,8 @@ def run_test(args, config, qid):
         compile_cmd = config["commands"][args.lang]["compile_cmd"]
         compile_cmd = compile_cmd.format(fname=fname, oname=oname)
         print("cmd: {}".format(compile_cmd))
-        returncode, stdout, stderr, t, tle = run_cmd(compile_cmd, timeout=None)
+        returncode, stdout, stderr, t, tle = run_cmd(
+            compile_cmd, input_line=None, timeout=None)
         print_line = ""
         if returncode == 0:
             print_line += color["Yellow"] + "Compile Succeeded!" + color["reset"]
