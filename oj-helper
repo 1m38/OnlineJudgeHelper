@@ -125,8 +125,11 @@ def run_cmd(cmd, input_line, timeout):
                          stderr=subprocess.PIPE,
                          universal_newlines=True)
     stdout_data, stderr_data = ("", "")
-    try:
+    if timeout is not None:
         tl = timeout * 2
+    else:
+        tl = None
+    try:
         stdout_data, stderr_data = p.communicate(timeout=tl,
                                                  input=input_line)
     except subprocess.TimeoutExpired:

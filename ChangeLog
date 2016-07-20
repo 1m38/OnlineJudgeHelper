@@ -1,3 +1,8 @@
+2016-07-20  Masaya Uno  <masaya@FS-MC-pca308>
+
+	* oj-helper (run_cmd): compileができない不具合修正
+	compile時など、timeoutをNoneとするとrun_cmdで死ぬ不具合修正
+
 2016-07-04  Masaya Uno  <masaya@FS-MC-pca308>
 
 	* oj-helper (run_cmd): timeoutの2倍の時間まで実行する
