@@ -1,6 +1,7 @@
 2016-09-25  Masaya Uno  <masaya@FS-MC-pca308>
 
 	* oj-helper (run_test): 期待出力が無ければ正誤判定しない
+	(run_test): 成功したテスト数を出力
 
 	* config.json: Javaについてはとりあえず"Main.java"で決め打ち
 

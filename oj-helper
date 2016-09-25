@@ -193,6 +193,7 @@ def run_test(args, config, qid):
     test_cmd = config["commands"][args.lang]["test_cmd"]
     test_cmd = test_cmd.format(fname=fname, oname=oname)
     test_list = parse_sample(qid)
+    test_results = ""
     for i in range(0, len(test_list), 2):
         test_case_in = test_list[i][1]
         test_case_out = test_list[i + 1][1]
@@ -203,22 +204,30 @@ def run_test(args, config, qid):
         print_line = "Test {}: ".format(test_n)
         if tle:
             print_line += color["bRed"] + "Timeout Error!" + color["reset"]
+            test_results += color["bRed"] + "T" + color["reset"]
         elif returncode != 0:
             print_line += color["bRed"] + "Runtime Error!" + color["reset"]
+            test_results += color["bRed"] + "R" + color["reset"]
         elif t > args.time_limit:
             print_line += color["bRed"] + "Time Limit Expired!" + color["reset"]
+            test_results += color["bRed"] + "T" + color["reset"]
         elif len(test_case_out) == 0:
             # 期待出力が無ければ正誤判定しない
             print_line += color["bCyan"] + "Done!" + color["reset"]
+            test_results += "-"
         elif stdout != test_case_out:
             if chk_output_floatError(stdout, test_case_out,
                                      err=args.float_error):
                 print_line += color["bYellow"] + "Succeeded! (float error)" + color["reset"]
+                test_results += "o"
             else:
                 print_line += color["bRed"] + "Failed!" + color["reset"]
+                test_results += color["bRed"] + "x" + color["reset"]
         else:
             print_line += color["bYellow"] + "Succeeded!" + color["reset"]
+            test_results += "o"
         print_line += " (exit code: {})".format(returncode)
+        test_results += " "
         print(print_line)
         print("Time: {:.2f}s / {:.1f}s".format(t, args.time_limit))
         if stdout:
@@ -229,6 +238,10 @@ def run_test(args, config, qid):
             print(color["Green"] + stderr + color["reset"])
         print("---- expected output")
         print(color["Green"] + test_case_out + color["reset"])
+
+    n_tests = len(test_list) // 2
+    n_passed = len([c for c in test_results if c in "o-"])
+    print(test_results + "  Passed: {} / {}".format(n_passed, n_tests))
 
 
 def main(args, config):
