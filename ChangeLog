@@ -2,6 +2,8 @@
 
 	* oj-helper (run_test): 期待出力が無ければ正誤判定しない
 	(run_test): 成功したテスト数を出力
+	(setup): -p オプション無しでsetup時、その場にテンプレートを生成
+	問題ディレクトリ内にいれば(.sampleがあれば)、カレントディレクトリに生成する
 
 	* config.json: Javaについてはとりあえず"Main.java"で決め打ち
 
