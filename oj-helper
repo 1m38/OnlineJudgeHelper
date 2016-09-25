@@ -207,6 +207,9 @@ def run_test(args, config, qid):
             print_line += color["bRed"] + "Runtime Error!" + color["reset"]
         elif t > args.time_limit:
             print_line += color["bRed"] + "Time Limit Expired!" + color["reset"]
+        elif len(test_case_out) == 0:
+            # 期待出力が無ければ正誤判定しない
+            print_line += color["bCyan"] + "Done!" + color["reset"]
         elif stdout != test_case_out:
             if chk_output_floatError(stdout, test_case_out,
                                      err=args.float_error):

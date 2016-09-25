@@ -1,5 +1,7 @@
 2016-09-25  Masaya Uno  <masaya@FS-MC-pca308>
 
+	* oj-helper (run_test): 期待出力が無ければ正誤判定しない
+
 	* config.json: Javaについてはとりあえず"Main.java"で決め打ち
 
 	* oj-helper: ファイル名に縛りが有る場合に対応
