@@ -15,6 +15,10 @@
 	"cpp":{
 	    "compile_cmd": "g++ -Wall -lm -o {oname} \"{fname}\"",
 	    "test_cmd": "./{oname}"
+	},
+	"hs":{
+	    "compile_cmd": "ghc -Wall -O2 -o {oname} \"{fname}\"",
+	    "test_cmd": "./{oname}"
 	}
     }
 }
