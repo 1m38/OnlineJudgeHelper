@@ -19,6 +19,11 @@
 	"hs":{
 	    "compile_cmd": "ghc -Wall -O2 -o {oname} \"{fname}\"",
 	    "test_cmd": "./{oname}"
+	},
+	"java":{
+	    "filename": "Main.java",
+	    "compile_cmd": "javac \"{fname}\"",
+	    "test_cmd": "java Main"
 	}
     }
 }

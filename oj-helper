@@ -90,8 +90,12 @@ def setup(args, config):
     script_dir = os.path.dirname(os.path.realpath(__file__))
     template_dir = config["templates"].format(src_dir=script_dir)
     template_file = os.path.join(template_dir, "template.{}".format(args.lang))
-    script_path = args.file_name if args.file_name is not None \
-        else "{}.{}".format(pnumber, args.lang)
+    if args.file_name is not None:
+        script_path = args.file_name
+    elif "filename" in config["commands"][args.lang]:
+        script_path = config["commands"][args.lang]["filename"]
+    else:
+        script_path = "{}.{}".format(pnumber, args.lang)
     script_path = os.path.join(dirname, script_path)
     sample_path = os.path.join(dirname, "{}.sample".format(pnumber))
     if not os.path.exists(dirname):
@@ -160,7 +164,10 @@ def run_test(args, config, qid):
     if args.file_name:
         fname = args.file_name
     else:
-        fname = "{}.{}".format(qid, args.lang)
+        if "filename" in config["commands"][args.lang]:
+            fname = config["commands"][args.lang]["filename"]
+        else:
+            fname = "{}.{}".format(qid, args.lang)
     oname = "{}.out".format(qid)
     if "compile_cmd" in config["commands"][args.lang]:
         compile_cmd = config["commands"][args.lang]["compile_cmd"]

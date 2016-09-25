@@ -1,5 +1,10 @@
 2016-09-25  Masaya Uno  <masaya@FS-MC-pca308>
 
+	* config.json: Javaについてはとりあえず"Main.java"で決め打ち
+
+	* oj-helper: ファイル名に縛りが有る場合に対応
+	Javaは"Main.java"にしないといけない等の制約に対応
+
 	* config.json: Haskell用設定追加
 
 2016-07-20  Masaya Uno  <masaya@FS-MC-pca308>
