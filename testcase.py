@@ -11,6 +11,7 @@ import re
 
 class TestCase(object):
     re_testcase_mode = re.compile(r"/\* (.+) \*/")
+    re_testcase_url = re.compile(r"^URL:(.+)$")
 
     def __init__(self, filepath):
         self.filepath = filepath
@@ -20,7 +21,7 @@ class TestCase(object):
         except IOError as e:
             print("File '{}' can't open.".format(filename))
             raise e
-        self.testcases = self.parse_testcase(testcase_txt)
+        self.testcases, self.url = self.parse_testcase(testcase_txt)
 
     def save(self):
         testcase_str = self.format_testcase()
@@ -32,6 +33,7 @@ class TestCase(object):
         testcase_id = None
         tc = ["", ""]
         mode = None
+        url = ""
         for line in testcase_txt.split("\n"):
             m = TestCase.re_testcase_mode.match(line)
             if m:
@@ -39,16 +41,19 @@ class TestCase(object):
                     test_list.append(tc)
                     tc = ["", ""]
                 mode = m.group(1)
+                if mode.startswith("URL"):
+                    url = TestCase.re_testcase_url.match(mode).group(1)
+                    mode = None
             elif mode is not None:
                 if mode.startswith("Test"):
                     tc[0] += line + "\n"
                 elif mode.startswith("Output"):
                     tc[1] += line + "\n"
         # 末尾の改行を削除
-        if mode is not None:
+        if mode is not None and mode.startswith("Output"):
             tc[1] = tc[1][:-1]
             test_list.append(tc)
-        return test_list
+        return test_list, url
 
     def add_testcase(self, test_str, out_str):
         self.testcases.append([test_str, out_str])

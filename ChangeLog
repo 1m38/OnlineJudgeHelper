@@ -1,6 +1,7 @@
 2016-10-09    <masaya@FS-VM-arch>
 
 	* testcase.py (TestCase): class化
+	(TestCase): urlの追加に対応
 
 	* oj-helper: sample -> testcase
 
