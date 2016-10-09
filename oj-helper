@@ -13,6 +13,7 @@ import subprocess
 import json
 import shutil
 import time
+import testcase
 
 # compatible with Python2
 if sys.version_info.major == 2:
@@ -36,7 +37,6 @@ color = {"reset"    : "\033[0m",
          "Cyan"     : "\033[36m",
          "White"    : "\033[37m"}
 
-re_sample_comment = re.compile(r"/\* (.+) \*/")
 re_isFloat = re.compile('^[+-]?(\d*\.\d+|\d+\.?\d*)([eE][+-]?\d+|)\Z')
 re_isInt = re.compile('^(\d+)\n?\Z')
 
@@ -50,37 +50,6 @@ def input_lines(prompt=None):
             lines += "\n"
         except EOFError:
             return lines
-
-
-def parse_sample(qid):
-    try:
-        with open(qid + ".sample", "r") as f:
-            sample_txt = f.read()
-    except IOError:
-        print("File '{}' not found.".format(qid + ".sample"))
-        sys.exit(1)
-    test_list = []
-    sample_id = None
-    for line in sample_txt.split("\n"):
-        m = re_sample_comment.match(line)
-        if m:
-            sample_id = m.group(1)
-            test_list.append([sample_id, ""])
-        elif sample_id is not None:
-            test_list[-1][1] += line + "\n"
-    # 末尾の改行を削除
-    if sample_id is not None:
-        test_list[-1][1] = test_list[-1][1][:-1]
-    return test_list
-
-
-def add_sample(qid, test_id, test_str, out_str):
-    with open(qid + ".sample", "a") as f:
-        f.write("/* Test {} */\n".format(test_id))
-        f.write(test_str)
-        f.write("/* Output {} */\n".format(test_id))
-        f.write(out_str)
-    print("Added test case {}.".format(test_id))
 
 
 def setup(args, config):
@@ -121,11 +90,11 @@ def setup(args, config):
 
 
 def add_test(args, qid):
-    test_list = parse_sample(qid)
+    test_list = testcase.parse_testcase(qid)
     test_id = int(test_list[-1][0][7:]) + 1 if len(test_list) > 0 else 0
     test_str = input_lines(prompt="TestCase {}:".format(test_id))
     out_str = input_lines(prompt="Output {}:".format(test_id))
-    add_sample(qid, test_id, test_str, out_str)
+    testcase.add_testcase(qid, test_id, test_str, out_str)
 
 
 def run_cmd(cmd, input_line, timeout):
@@ -200,7 +169,7 @@ def run_test(args, config, qid):
             sys.exit(returncode)
     test_cmd = config["commands"][args.lang]["test_cmd"]
     test_cmd = test_cmd.format(fname=fname, oname=oname)
-    test_list = parse_sample(qid)
+    test_list = testcase.parse_testcase(qid)
     test_results = ""
     for i in range(0, len(test_list), 2):
         test_case_in = test_list[i][1]

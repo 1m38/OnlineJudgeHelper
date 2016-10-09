@@ -1,3 +1,9 @@
+2016-10-09    <masaya@FS-VM-arch>
+
+	* oj-helper: sample -> testcase
+
+	* testcase.py: testcase parse部分を分離
+
 2016-09-25  Masaya Uno  <masaya@FS-MC-pca308>
 
 	* oj-helper (run_test): 期待出力が無ければ正誤判定しない
