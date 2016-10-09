@@ -84,17 +84,28 @@ def add_sample(qid, test_id, test_str, out_str):
 
 
 def setup(args, config):
-    contest = args.contest_name
-    if args.problem_number is None:
-        pnumber = os.path.basename(os.getcwd())
-        if not os.path.exists(pnumber + ".sample"):
-            print(".sample file not found.")
-            print("Please specify problen name(-p) or run in a problen directory.")
-            sys.exit(10)
-        dirname = "."
+    if args.url:
+        contest, pnumber, sample = ...
+        cur_dir = os.getcwd().split("/")
+        if cur_dir[-1] == contest:
+            dirname = pnumber   # contest directoryで実行
+        elif cur_dir[-1] == pnumber and cur_dir[-2] == contest:
+            dirname = "."       # problem directoryで実行
+        else:
+            dirname = os.path.join(contest, pnumber)
     else:
-        pnumber = args.problem_number
-        dirname = os.path.join(contest, pnumber)
+        sample = ""
+        contest = args.contest_name
+        if args.problem_number is None:
+            pnumber = os.path.basename(os.getcwd())
+            if not os.path.exists(pnumber + ".sample"):
+                print(".sample file not found.")
+                print("Please specify problen name(-p) or run in a problen directory.")
+                sys.exit(10)
+            dirname = "."
+        else:
+            pnumber = args.problem_number
+            dirname = os.path.join(contest, pnumber)
     script_dir = os.path.dirname(os.path.realpath(__file__))
     template_dir = config["templates"].format(src_dir=script_dir)
     template_file = os.path.join(template_dir, "template.{}".format(args.lang))
@@ -114,10 +125,10 @@ def setup(args, config):
         print("Template file not found. A blank file is created.")
         with open(script_path, "w") as f:
             f.write("")
-    # 空のsampleファイル作成
+    # sampleファイル作成
     if not os.path.exists(sample_path):
         with open(sample_path, "w") as f:
-            f.write("")
+            f.write(sample)
 
 
 def add_test(args, qid):
@@ -273,6 +284,8 @@ if __name__ == "__main__":
     parser.add_argument("-l", "--lang", default=None)
     parser.add_argument("-c", "--contest-name", default="")
     parser.add_argument("-p", "--problem-number", default=None)
+    parser.add_argument("-u", "--url", default="",
+                        help="URL for question page (ignore --contest-name and --problem number)")
     parser.add_argument("-f", "--file-name", default=None)
     parser.add_argument("-t", "--time-limit", type=int, default=2)
     parser.add_argument("-e", "--float-error", type=float, default=1e-4)
