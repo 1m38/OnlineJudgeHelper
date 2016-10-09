@@ -1,5 +1,8 @@
 2016-10-09    <masaya@FS-VM-arch>
 
+	* oj_sites.py: AtCoderからのtestcase取得に対応
+	サイトごとの処理を書くスクリプト
+
 	* testcase.py (TestCase): class化
 	(TestCase): urlの追加に対応
 	(TestCase): 新規作成に対応

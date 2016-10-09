@@ -65,7 +65,7 @@ class TestCase(object):
     def format_testcase(self):
         testcase_str = ""
         if self.url:
-            testcase_str += "/* URL:{} */\n".format(url)
+            testcase_str += "/* URL:{} */\n".format(self.url)
         for test_id in range(len(self.testcases)):
             testcase_str += "/* Test {} */\n".format(test_id)
             testcase_str += self.testcases[test_id][0]

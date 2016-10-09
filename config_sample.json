@@ -25,5 +25,12 @@
 	    "compile_cmd": "javac \"{fname}\"",
 	    "test_cmd": "java Main"
 	}
+    },
+
+    "sites": {
+	"AtCoder": {
+	    "username": "sample",
+	    "password": "sample"
+	}
     }
 }
