@@ -13,7 +13,7 @@ import subprocess
 import json
 import shutil
 import time
-import testcase
+from testcase import TestCase
 
 # compatible with Python2
 if sys.version_info.major == 2:
@@ -90,11 +90,13 @@ def setup(args, config):
 
 
 def add_test(args, qid):
-    test_list = testcase.parse_testcase(qid)
-    test_id = int(test_list[-1][0][7:]) + 1 if len(test_list) > 0 else 0
+    testcase = TestCase(qid + ".sample")
+    test_id = len(testcase.testcases)
     test_str = input_lines(prompt="TestCase {}:".format(test_id))
     out_str = input_lines(prompt="Output {}:".format(test_id))
-    testcase.add_testcase(qid, test_id, test_str, out_str)
+    testcase.add_testcase(test_str, out_str)
+    testcase.save()
+    print("Added test case {}.".format(test_id))
 
 
 def run_cmd(cmd, input_line, timeout):
@@ -169,11 +171,12 @@ def run_test(args, config, qid):
             sys.exit(returncode)
     test_cmd = config["commands"][args.lang]["test_cmd"]
     test_cmd = test_cmd.format(fname=fname, oname=oname)
-    test_list = testcase.parse_testcase(qid)
+    testcase = TestCase(qid + ".sample")
+    test_list = testcase.testcases
     test_results = ""
-    for i in range(0, len(test_list), 2):
-        test_case_in = test_list[i][1]
-        test_case_out = test_list[i + 1][1]
+    for i in range(len(test_list)):
+        test_case_in = test_list[i][0]
+        test_case_out = test_list[i][1]
         test_n = i // 2
         returncode, stdout, stderr, t, tle = run_cmd(test_cmd,
                                                      input_line=test_case_in,
@@ -216,7 +219,7 @@ def run_test(args, config, qid):
         print("---- expected output")
         print(color["Green"] + test_case_out + color["reset"])
 
-    n_tests = len(test_list) // 2
+    n_tests = len(test_list)
     n_passed = len([c for c in test_results if c in "o-"])
     print(test_results + "  Passed: {} / {}".format(n_passed, n_tests))
 

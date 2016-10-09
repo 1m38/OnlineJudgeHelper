@@ -9,34 +9,55 @@ import sys
 import re
 
 
-re_testcase_comment = re.compile(r"/\* (.+) \*/")
+class TestCase(object):
+    re_testcase_mode = re.compile(r"/\* (.+) \*/")
 
-def parse_testcase(qid):
-    try:
-        with open(qid + ".sample", "r") as f:
-            testcase_txt = f.read()
-    except IOError:
-        print("File '{}' not found.".format(qid + ".sample"))
-        sys.exit(1)
-    test_list = []
-    testcase_id = None
-    for line in testcase_txt.split("\n"):
-        m = re_testcase_comment.match(line)
-        if m:
-            testcase_id = m.group(1)
-            test_list.append([testcase_id, ""])
-        elif testcase_id is not None:
-            test_list[-1][1] += line + "\n"
-    # 末尾の改行を削除
-    if testcase_id is not None:
-        test_list[-1][1] = test_list[-1][1][:-1]
-    return test_list
+    def __init__(self, filepath):
+        self.filepath = filepath
+        try:
+            with open(filepath, "r") as f:
+                testcase_txt = f.read()
+        except IOError as e:
+            print("File '{}' can't open.".format(filename))
+            raise e
+        self.testcases = self.parse_testcase(testcase_txt)
 
+    def save(self):
+        testcase_str = self.format_testcase()
+        with open(self.filepath, "w") as f:
+            f.write(testcase_str)
 
-def add_testcase(qid, test_id, test_str, out_str):
-    with open(qid + ".sample", "a") as f:
-        f.write("/* Test {} */\n".format(test_id))
-        f.write(test_str)
-        f.write("/* Output {} */\n".format(test_id))
-        f.write(out_str)
-    print("Added test case {}.".format(test_id))
+    def parse_testcase(self, testcase_txt):
+        test_list = []
+        testcase_id = None
+        tc = ["", ""]
+        mode = None
+        for line in testcase_txt.split("\n"):
+            m = TestCase.re_testcase_mode.match(line)
+            if m:
+                if mode is not None and mode.startswith("Output"):
+                    test_list.append(tc)
+                    tc = ["", ""]
+                mode = m.group(1)
+            elif mode is not None:
+                if mode.startswith("Test"):
+                    tc[0] += line + "\n"
+                elif mode.startswith("Output"):
+                    tc[1] += line + "\n"
+        # 末尾の改行を削除
+        if mode is not None:
+            tc[1] = tc[1][:-1]
+            test_list.append(tc)
+        return test_list
+
+    def add_testcase(self, test_str, out_str):
+        self.testcases.append([test_str, out_str])
+
+    def format_testcase(self):
+        testcase_str = ""
+        for test_id in range(len(self.testcases)):
+            testcase_str += "/* Test {} */\n".format(test_id)
+            testcase_str += self.testcases[test_id][0]
+            testcase_str += "/* Output {} */\n".format(test_id)
+            testcase_str += self.testcases[test_id][1]
+        return testcase_str

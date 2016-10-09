@@ -1,5 +1,7 @@
 2016-10-09    <masaya@FS-VM-arch>
 
+	* testcase.py (TestCase): class化
+
 	* oj-helper: sample -> testcase
 
 	* testcase.py: testcase parse部分を分離
