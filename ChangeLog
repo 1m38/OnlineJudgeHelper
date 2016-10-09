@@ -2,6 +2,7 @@
 
 	* testcase.py (TestCase): class化
 	(TestCase): urlの追加に対応
+	(TestCase): 新規作成に対応
 
 	* oj-helper: sample -> testcase
 

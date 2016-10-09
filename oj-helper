@@ -54,7 +54,7 @@ def input_lines(prompt=None):
 
 def setup(args, config):
     if args.url:
-        contest, pnumber, sample = ...
+        contest, pnumber, testcases = ...
         cur_dir = os.getcwd().split("/")
         if cur_dir[-1] == contest:
             dirname = pnumber   # contest directoryで実行
@@ -62,6 +62,7 @@ def setup(args, config):
             dirname = "."       # problem directoryで実行
         else:
             dirname = os.path.join(contest, pnumber)
+        url = args.url
     else:
         sample = ""
         contest = args.contest_name
@@ -75,6 +76,8 @@ def setup(args, config):
         else:
             pnumber = args.problem_number
             dirname = os.path.join(contest, pnumber)
+        testcases = []
+        url = None
     script_dir = os.path.dirname(os.path.realpath(__file__))
     template_dir = config["templates"].format(src_dir=script_dir)
     template_file = os.path.join(template_dir, "template.{}".format(args.lang))
@@ -85,7 +88,6 @@ def setup(args, config):
     else:
         script_path = "{}.{}".format(pnumber, args.lang)
     script_path = os.path.join(dirname, script_path)
-    sample_path = os.path.join(dirname, "{}.sample".format(pnumber))
     if not os.path.exists(dirname):
         os.makedirs(dirname)
     if os.path.exists(template_file):
@@ -94,10 +96,11 @@ def setup(args, config):
         print("Template file not found. A blank file is created.")
         with open(script_path, "w") as f:
             f.write("")
-    # sampleファイル作成
-    if not os.path.exists(sample_path):
-        with open(sample_path, "w") as f:
-            f.write(sample)
+    testcase_path = os.path.join(dirname, "{}.sample".format(pnumber))
+    if not os.path.exists(testcase_path):
+        testcase = TestCase(testcase_path, testcases, url)
+        testcase.save()
+
 
 
 def add_test(args, qid):

@@ -13,15 +13,19 @@ class TestCase(object):
     re_testcase_mode = re.compile(r"/\* (.+) \*/")
     re_testcase_url = re.compile(r"^URL:(.+)$")
 
-    def __init__(self, filepath):
+    def __init__(self, filepath, testcases=None, url=None):
         self.filepath = filepath
-        try:
-            with open(filepath, "r") as f:
-                testcase_txt = f.read()
-        except IOError as e:
-            print("File '{}' can't open.".format(filename))
-            raise e
-        self.testcases, self.url = self.parse_testcase(testcase_txt)
+        if testcases is None:
+            try:
+                with open(filepath, "r") as f:
+                    testcase_txt = f.read()
+            except IOError as e:
+                print("File '{}' can't open.".format(filename))
+                raise e
+            self.testcases, self.url = self.parse_testcase(testcase_txt)
+        else:
+            self.testcases = testcases
+            self.url = url
 
     def save(self):
         testcase_str = self.format_testcase()
@@ -60,6 +64,8 @@ class TestCase(object):
 
     def format_testcase(self):
         testcase_str = ""
+        if self.url:
+            testcase_str += "/* URL:{} */\n".format(url)
         for test_id in range(len(self.testcases)):
             testcase_str += "/* Test {} */\n".format(test_id)
             testcase_str += self.testcases[test_id][0]
