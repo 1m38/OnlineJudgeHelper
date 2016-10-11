@@ -12,7 +12,7 @@ import re
 import collections
 import requests
 import parse
-import lxml.html
+from bs4 import BeautifulSoup
 
 
 def detect_site(url):
@@ -34,8 +34,8 @@ class AtCoder(object):
         self.password = config["sites"]["AtCoder"]["password"]
         self.s = requests.Session()
         self.login()
-        self.get()
-        self.testcases = self.parse_page()
+        self.page = self.get()
+        self.testcases = self.parse_page(self.page)
 
     def result(self):
         return self.contest, self.pnumber, self.testcases
@@ -52,17 +52,19 @@ class AtCoder(object):
 
     def get(self):
         r = self.s.get(self.url)
-        self.page = r.text
+        return r.text
 
-    def parse_page(self):
+    def parse_page(self, page):
         testcases = []
-        root = lxml.html.fromstring(self.page)
-        h3s = [e for e in root.xpath("//section/h3")
-               if e.text.startswith("入力例")]
-        i_sections = [e.getparent() for e in h3s]
-        for e in i_sections:
-            input_str = e.find("pre").text.replace("\r\n", "\n")
-            output_section = e.getparent().getnext().find("section")
-            output_str = output_section.find("pre").text.replace("\r\n", "\n")
+        soup = BeautifulSoup(page, "html.parser")
+        task = soup.find("div", {"id": "task-statement"})
+        task_ja = task.find("span", {"class": "lang-ja"})
+        if not task_ja:
+            task_ja = task
+        pres = task_ja.findAll("pre")
+        n_pres = len(pres)
+        for i in range(1, n_pres, 2):
+            input_str = pres[i].text.replace("\r\n", "\n").strip() + "\n"
+            output_str = pres[i+1].text.replace("\r\n", "\n").strip() + "\n"
             testcases.append([input_str, output_str])
         return testcases
