@@ -191,14 +191,13 @@ def run_test(args, config, qid):
     testcase = TestCase(qid + ".sample")
     test_list = testcase.testcases
     test_results = ""
-    for i in range(len(test_list)):
-        test_case_in = test_list[i][0]
-        test_case_out = test_list[i][1]
-        test_n = i // 2
+    for test_num in range(len(test_list)):
+        test_case_in = test_list[test_num][0]
+        test_case_out = test_list[test_num][1]
         returncode, stdout, stderr, t, tle = run_cmd(test_cmd,
                                                      input_line=test_case_in,
                                                      timeout=args.time_limit)
-        print_line = "Test {}: ".format(test_n)
+        print_line = "Test {}: ".format(test_num)
         if tle:
             print_line += color["bRed"] + "Timeout Error!" + color["reset"]
             test_results += color["bRed"] + "T" + color["reset"]
