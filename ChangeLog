@@ -1,5 +1,7 @@
 2016-11-26  Masaya Uno  <masaya@FS-MC-pca308>
 
+	* templates/template.cpp: INFの値修正
+
 	* oj-helper (run_test): Test番号がおかしい不具合修正
 
 2016-10-11  Masaya Uno  <masaya@FS-MC-pca308>

@@ -13,11 +13,10 @@
 #include <functional>
 
 #define REP(i,n) for(int i = 0;i < n;i++)
-#define pyfor(j,s,n,i) for(int j = s;j < n;j += i)
 
 using namespace std;
 typedef long long ll;
-const int INF = INT_MAX;
+const int INF = INT_MAX / 4;
 
 const int max_n = 1e3;
 
