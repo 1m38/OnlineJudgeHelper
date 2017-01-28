@@ -3,6 +3,7 @@
 	* oj-helper : --verbose option
 	正解したcaseについては出力を表示しない
 	入力を表示
+	(run_test): 最後にcase一覧を表示
 
 	* requirements.txt: add
 
