@@ -1,3 +1,7 @@
+2017-01-29  Masaya Uno  <masaya@FS-VB-ub1604>
+
+	* requirements.txt: add
+
 2016-11-26  Masaya Uno  <masaya@FS-MC-pca308>
 
 	* templates/template.cpp: INFの値修正
