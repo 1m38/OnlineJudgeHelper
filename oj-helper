@@ -201,39 +201,56 @@ def run_test(args, config, qid):
         if tle:
             print_line += color["bRed"] + "Timeout Error!" + color["reset"]
             test_results += color["bRed"] + "T" + color["reset"]
+            correct = False
         elif returncode != 0:
             print_line += color["bRed"] + "Runtime Error!" + color["reset"]
             test_results += color["bRed"] + "R" + color["reset"]
+            correct = False
         elif t > args.time_limit:
             print_line += color["bRed"] + "Time Limit Expired!" + color["reset"]
             test_results += color["bRed"] + "T" + color["reset"]
+            correct = False
         elif len(test_case_out) == 0:
             # 期待出力が無ければ正誤判定しない
             print_line += color["bCyan"] + "Done!" + color["reset"]
             test_results += "-"
+            correct = False
         elif stdout != test_case_out:
             if chk_output_floatError(stdout, test_case_out,
                                      err=args.float_error):
                 print_line += color["bYellow"] + "Succeeded! (float error)" + color["reset"]
                 test_results += "o"
+                correct = True
             else:
                 print_line += color["bRed"] + "Failed!" + color["reset"]
                 test_results += color["bRed"] + "x" + color["reset"]
+                correct = False
         else:
             print_line += color["bYellow"] + "Succeeded!" + color["reset"]
             test_results += "o"
+            correct = True
         print_line += " (exit code: {})".format(returncode)
         test_results += " "
         print(print_line)
         print("Time: {:.2f}s / {:.1f}s".format(t, args.time_limit))
-        if stdout:
-            print("---- stdout")
-            print(color["Green"] + stdout + color["reset"])
-        if stderr:
-            print("---- stderr")
-            print(color["Green"] + stderr + color["reset"])
-        print("---- expected output")
-        print(color["Green"] + test_case_out + color["reset"])
+        if args.verbose >= 2 or (args.verbose == 1 and not correct):
+            print("---- input")
+            for i, line in enumerate(test_case_in.split("\n")):
+                if i > 5:
+                    print("...")
+                    break
+                l = line[:20]
+                if len(line) > 20:
+                    l += " ..."
+                print(l)
+            if stdout:
+                print("---- stdout")
+                print(color["Green"] + stdout + color["reset"])
+            if stderr:
+                print("---- stderr")
+                print(color["Green"] + stderr + color["reset"])
+            print("---- expected output")
+            print(color["Green"] + test_case_out + color["reset"])
 
     n_tests = len(test_list)
     n_passed = len([c for c in test_results if c in "o-"])
@@ -266,6 +283,8 @@ if __name__ == "__main__":
     parser.add_argument("-f", "--file-name", default=None)
     parser.add_argument("-t", "--time-limit", type=int, default=2)
     parser.add_argument("-e", "--float-error", type=float, default=1e-4)
+    parser.add_argument("-v", "--verbose", type=int, default=1,
+                        help="0: only show verdicts, 1: show outputs of not succeeded cases 2: show outputs of all cases")
     args = parser.parse_args()
 
     script_dir = os.path.dirname(os.path.realpath(__file__))

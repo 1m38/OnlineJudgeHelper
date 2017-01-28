@@ -1,5 +1,9 @@
 2017-01-29  Masaya Uno  <masaya@FS-VB-ub1604>
 
+	* oj-helper : --verbose option
+	正解したcaseについては出力を表示しない
+	入力を表示
+
 	* requirements.txt: add
 
 2016-11-26  Masaya Uno  <masaya@FS-MC-pca308>
