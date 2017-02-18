@@ -29,6 +29,9 @@
 	    "filename": "Main.java",
 	    "compile_cmd": "javac \"{fname}\"",
 	    "test_cmd": "java Main"
+	},
+	"js":{
+	    "test_cmd": "node {fname}"
 	}
     },
 

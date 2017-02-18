@@ -1,3 +1,7 @@
+2017-02-18    <masaya@FS-VB-arch>
+
+	* config_sample.json: JavaScript(node)の設定追加
+
 2017-01-29  Masaya Uno  <masaya@FS-VB-ub1604>
 
 	* oj-helper : --verbose option
