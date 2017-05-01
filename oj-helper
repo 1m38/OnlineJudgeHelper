@@ -13,6 +13,8 @@ import subprocess
 import json
 import shutil
 import time
+from testcase import TestCase
+import oj_sites
 
 # compatible with Python2
 if sys.version_info.major == 2:
@@ -36,7 +38,6 @@ color = {"reset"    : "\033[0m",
          "Cyan"     : "\033[36m",
          "White"    : "\033[37m"}
 
-re_sample_comment = re.compile(r"/\* (.+) \*/")
 re_isFloat = re.compile('^[+-]?(\d*\.\d+|\d+\.?\d*)([eE][+-]?\d+|)\Z')
 re_isInt = re.compile('^(\d+)\n?\Z')
 
@@ -52,49 +53,34 @@ def input_lines(prompt=None):
             return lines
 
 
-def parse_sample(qid):
-    try:
-        with open(qid + ".sample", "r") as f:
-            sample_txt = f.read()
-    except IOError:
-        print("File '{}' not found.".format(qid + ".sample"))
-        sys.exit(1)
-    test_list = []
-    sample_id = None
-    for line in sample_txt.split("\n"):
-        m = re_sample_comment.match(line)
-        if m:
-            sample_id = m.group(1)
-            test_list.append([sample_id, ""])
-        elif sample_id is not None:
-            test_list[-1][1] += line + "\n"
-    # 末尾の改行を削除
-    if sample_id is not None:
-        test_list[-1][1] = test_list[-1][1][:-1]
-    return test_list
-
-
-def add_sample(qid, test_id, test_str, out_str):
-    with open(qid + ".sample", "a") as f:
-        f.write("/* Test {} */\n".format(test_id))
-        f.write(test_str)
-        f.write("/* Output {} */\n".format(test_id))
-        f.write(out_str)
-    print("Added test case {}.".format(test_id))
-
-
 def setup(args, config):
-    contest = args.contest_name
-    if args.problem_number is None:
-        pnumber = os.path.basename(os.getcwd())
-        if not os.path.exists(pnumber + ".sample"):
-            print(".sample file not found.")
-            print("Please specify problen name(-p) or run in a problen directory.")
-            sys.exit(10)
-        dirname = "."
+    if args.url:
+        sitename = oj_sites.detect_site(args.url)
+        testcase_generator = getattr(oj_sites, sitename)(args.url, config)
+        contest, pnumber, testcases = testcase_generator.result()
+        cur_dir = os.getcwd().split("/")
+        if cur_dir[-1] == contest:
+            dirname = pnumber   # contest directoryで実行
+        elif cur_dir[-1] == pnumber and cur_dir[-2] == contest:
+            dirname = "."       # problem directoryで実行
+        else:
+            dirname = os.path.join(contest, pnumber)
+        url = args.url
     else:
-        pnumber = args.problem_number
-        dirname = os.path.join(contest, pnumber)
+        sample = ""
+        contest = args.contest_name
+        if args.problem_number is None:
+            pnumber = os.path.basename(os.getcwd())
+            if not os.path.exists(pnumber + ".sample"):
+                print(".sample file not found.")
+                print("Please specify problen name(-p) or run in a problen directory.")
+                sys.exit(10)
+            dirname = "."
+        else:
+            pnumber = args.problem_number
+            dirname = os.path.join(contest, pnumber)
+        testcases = []
+        url = None
     script_dir = os.path.dirname(os.path.realpath(__file__))
     template_dir = config["templates"].format(src_dir=script_dir)
     template_file = os.path.join(template_dir, "template.{}".format(args.lang))
@@ -105,7 +91,6 @@ def setup(args, config):
     else:
         script_path = "{}.{}".format(pnumber, args.lang)
     script_path = os.path.join(dirname, script_path)
-    sample_path = os.path.join(dirname, "{}.sample".format(pnumber))
     if not os.path.exists(dirname):
         os.makedirs(dirname)
     if os.path.exists(template_file):
@@ -114,18 +99,21 @@ def setup(args, config):
         print("Template file not found. A blank file is created.")
         with open(script_path, "w") as f:
             f.write("")
-    # 空のsampleファイル作成
-    if not os.path.exists(sample_path):
-        with open(sample_path, "w") as f:
-            f.write("")
+    testcase_path = os.path.join(dirname, "{}.sample".format(pnumber))
+    if not os.path.exists(testcase_path):
+        testcase = TestCase(testcase_path, testcases, url)
+        testcase.save()
+
 
 
 def add_test(args, qid):
-    test_list = parse_sample(qid)
-    test_id = int(test_list[-1][0][7:]) + 1 if len(test_list) > 0 else 0
+    testcase = TestCase(qid + ".sample")
+    test_id = len(testcase.testcases)
     test_str = input_lines(prompt="TestCase {}:".format(test_id))
     out_str = input_lines(prompt="Output {}:".format(test_id))
-    add_sample(qid, test_id, test_str, out_str)
+    testcase.add_testcase(test_str, out_str)
+    testcase.save()
+    print("Added test case {}.".format(test_id))
 
 
 def run_cmd(cmd, input_line, timeout):
@@ -200,56 +188,87 @@ def run_test(args, config, qid):
             sys.exit(returncode)
     test_cmd = config["commands"][args.lang]["test_cmd"]
     test_cmd = test_cmd.format(fname=fname, oname=oname)
-    test_list = parse_sample(qid)
-    test_results = ""
-    for i in range(0, len(test_list), 2):
-        test_case_in = test_list[i][1]
-        test_case_out = test_list[i + 1][1]
-        test_n = i // 2
+    testcase = TestCase(qid + ".sample")
+    test_list = testcase.testcases
+    test_results = []
+    for test_num in range(len(test_list)):
+        result = {}
+        test_case_in = test_list[test_num][0]
+        test_case_out = test_list[test_num][1]
         returncode, stdout, stderr, t, tle = run_cmd(test_cmd,
                                                      input_line=test_case_in,
                                                      timeout=args.time_limit)
-        print_line = "Test {}: ".format(test_n)
+        print_line = "Test {}: ".format(test_num)
         if tle:
             print_line += color["bRed"] + "Timeout Error!" + color["reset"]
-            test_results += color["bRed"] + "T" + color["reset"]
+            # result["verdict_c"] = color["bRed"] + "T" + color["reset"]
+            result["verdict"] = color["bRed"] + "TLE" + color["reset"]
+            result["correct"] = False
         elif returncode != 0:
             print_line += color["bRed"] + "Runtime Error!" + color["reset"]
-            test_results += color["bRed"] + "R" + color["reset"]
+            # result["verdict_c"] = color["bRed"] + "R" + color["reset"]
+            result["verdict"] = color["bRed"] + "RE" + color["reset"]
+            result["correct"] = False
         elif t > args.time_limit:
             print_line += color["bRed"] + "Time Limit Expired!" + color["reset"]
-            test_results += color["bRed"] + "T" + color["reset"]
+            # result["verdict_c"] = color["bRed"] + "T" + color["reset"]
+            result["verdict"] = color["bRed"] + "TLE" + color["reset"]
+            result["correct"] = False
         elif len(test_case_out) == 0:
             # 期待出力が無ければ正誤判定しない
             print_line += color["bCyan"] + "Done!" + color["reset"]
-            test_results += "-"
+            # result["verdict_c"] = "-"
+            result["verdict"] = color["bCyan"] + "D" + color["reset"]
+            result["correct"] = True
         elif stdout != test_case_out:
             if chk_output_floatError(stdout, test_case_out,
                                      err=args.float_error):
                 print_line += color["bYellow"] + "Succeeded! (float error)" + color["reset"]
-                test_results += "o"
+                result["verdict_c"] = "o"
+                result["verdict"] = color["bYellow"] + "AC/f" + color["reset"]
+                result["correct"] = True
             else:
                 print_line += color["bRed"] + "Failed!" + color["reset"]
-                test_results += color["bRed"] + "x" + color["reset"]
+                # result["verdict_c"] = color["bRed"] + "x" + color["reset"]
+                result["verdict"] = color["bRed"] + "WA" + color["reset"]
+                result["correct"] = False
         else:
             print_line += color["bYellow"] + "Succeeded!" + color["reset"]
-            test_results += "o"
+            # result["verdict_c"] = "o"
+            result["verdict"] = color["bYellow"] + "AC" + color["reset"]
+            result["correct"] = True
         print_line += " (exit code: {})".format(returncode)
-        test_results += " "
-        print(print_line)
-        print("Time: {:.2f}s / {:.1f}s".format(t, args.time_limit))
-        if stdout:
-            print("---- stdout")
-            print(color["Green"] + stdout + color["reset"])
-        if stderr:
-            print("---- stderr")
-            print(color["Green"] + stderr + color["reset"])
-        print("---- expected output")
-        print(color["Green"] + test_case_out + color["reset"])
+        result["time"] = t
+        if args.verbose >= 2 or (args.verbose == 1 and not result["correct"]):
+            print(print_line)
+            print("Time: {:.2f}s / {:.1f}s".format(t, args.time_limit))
+            print("---- input")
+            for i, line in enumerate(test_case_in.split("\n")):
+                if i > 5:
+                    print("...")
+                    break
+                l = line[:20]
+                if len(line) > 20:
+                    l += " ..."
+                print(l)
+            if stdout:
+                print("---- stdout")
+                print(color["Green"] + stdout + color["reset"])
+            if stderr:
+                print("---- stderr")
+                print(color["Green"] + stderr + color["reset"])
+            print("---- expected output")
+            print(color["Green"] + test_case_out + color["reset"])
+        test_results.append(result)
 
-    n_tests = len(test_list) // 2
-    n_passed = len([c for c in test_results if c in "o-"])
-    print(test_results + "  Passed: {} / {}".format(n_passed, n_tests))
+    print("\n -------------------------")
+    for i, r in enumerate(test_results):
+        print("  case {i:2d} | {vd:^15s} | {t:5.2f}s".format(
+            i=i, vd=r["verdict"], t=r["time"]))
+    print(" -------------------------")
+    n_tests = len(test_list)
+    n_passed = sum([r["correct"] for r in test_results])
+    print(" Passed: {} / {}".format(n_passed, n_tests))
 
 
 def main(args, config):
@@ -273,9 +292,13 @@ if __name__ == "__main__":
     parser.add_argument("-l", "--lang", default=None)
     parser.add_argument("-c", "--contest-name", default="")
     parser.add_argument("-p", "--problem-number", default=None)
+    parser.add_argument("-u", "--url", default="",
+                        help="URL for question page (ignore --contest-name and --problem number)")
     parser.add_argument("-f", "--file-name", default=None)
     parser.add_argument("-t", "--time-limit", type=int, default=2)
     parser.add_argument("-e", "--float-error", type=float, default=1e-4)
+    parser.add_argument("-v", "--verbose", type=int, default=2,
+                        help="0: only show verdicts, 1: show outputs of not succeeded cases 2: show outputs of all cases")
     args = parser.parse_args()
 
     script_dir = os.path.dirname(os.path.realpath(__file__))

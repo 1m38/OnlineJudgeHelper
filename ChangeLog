@@ -1,3 +1,46 @@
+2017-05-01  Masaya Uno  <masaya@FS-MC-pca308>
+
+	* config_sample.json: add node.js
+
+2017-01-29  Masaya Uno  <masaya@FS-VB-ub1604>
+
+	* oj-helper : --verbose option
+	正解したcaseについては出力を表示しない
+	入力を表示
+	(run_test): 最後にcase一覧を表示
+
+	* requirements.txt: add
+
+2016-11-26  Masaya Uno  <masaya@FS-MC-pca308>
+
+	* templates/template.cpp: INFの値修正
+
+	* oj-helper (run_test): Test番号がおかしい不具合修正
+
+2016-11-15    <masaya@FS-VB-arch>
+
+	* config_sample.json: Add c++98(for POJ)
+
+2016-10-11  Masaya Uno  <masaya@FS-MC-pca308>
+
+	* oj_sites.py: AtCoderのスクレイピングを修正
+
+2016-10-09    <masaya@FS-VM-arch>
+
+	* oj_sites.py: AtCoderからのtestcase取得に対応
+	サイトごとの処理を書くスクリプト
+
+	* testcase.py (TestCase): class化
+	(TestCase): urlの追加に対応
+	(TestCase): 新規作成に対応
+
+	* oj-helper: sample -> testcase
+
+	* testcase.py: testcase parse部分を分離
+
+	* oj-helper (setup): --url オプションを追加
+	[WIP]まだ動かない
+
 2016-09-25  Masaya Uno  <masaya@FS-MC-pca308>
 
 	* oj-helper (run_test): 期待出力が無ければ正誤判定しない
