@@ -7,10 +7,12 @@
 
 ## 機能
 
-+ 解答ソースコードのコンパイル
-+ 解答コードの実行・入出力チェック・実行時間測定
-+ テストケースの管理
-+ ソースコードのテンプレート管理
+- 解答ソースコードのコンパイル
+- 解答コードの実行・入出力チェック・実行時間測定
+- テストケースの管理
+	- 一部サイトについて、テストケースの自動取得に対応  
+    (現在の対応サイト: AtCoder)
+- ソースコードのテンプレート管理
 
 ## Usage
 ### 動作環境
@@ -39,12 +41,9 @@ $ ./oj-helper s -u problem_url [-l language]
 その中に`{problem_name}.{language}`, `{problem_name}.sample`ファイルが作成されます。  
 `language`には、使いたい言語のソースコードの拡張子(cpp, pyなど)を指定します。
 指定しなければ、後述する`config.json`内の`dafault_language`の値が使われます。
-  
-対応コンテストサイトについては、 `-u problem_url` オプションにて、`contest_name`, `problem_name`, 後述のテストを一度に設定できます。
- 
-現在の対応サイト:
-- AtCoder
 
+テストケース自動取得対応サイトについては、 `-u problem_url` オプションにて、`contest_name`, `problem_name`, 後述のテストを一度に設定できます。
+ 
 ##### 2. コーディング
 
 `problem_name`ディレクトリに移動し、ソースコード(`{problem_mane}.{language}`)を作成します。
