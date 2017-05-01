@@ -1,3 +1,7 @@
+2017-05-01  Masaya Uno  <masaya@FS-MC-pca308>
+
+	* config_sample.json: add node.js
+
 2017-01-29  Masaya Uno  <masaya@FS-VB-ub1604>
 
 	* oj-helper : --verbose option
