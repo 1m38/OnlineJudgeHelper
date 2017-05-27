@@ -13,6 +13,7 @@ import collections
 import requests
 import parse
 from bs4 import BeautifulSoup
+import warnings
 
 
 def detect_site(url):
@@ -36,14 +37,15 @@ class ContestSite(object):
             raise NotImplementedError
         self.s = requests.Session()
         if self.site_name not in config["sites"]:
-            raise RuntimeWarning(
-                "User credential for contest site {} not in config.json".format(self.site_name))
+            warnings.warn(
+                "User credential for contest site {} not in config.json".format(self.site_name),
+                RuntimeWarning)
         else:
             self.username = config["sites"][self.site_name]["username"]
             self.password = config["sites"][self.site_name]["password"]
-        self.login()
-        # if login failed:
-        #     raise RuntimeWarning("Login failed.")
+        login_status = self.login()
+        if not login_status:
+            warnings.warn("Failed to login", RuntimeWarning)
         self.page = self.get()
         self.testcases = self.parse_page(self.page)
 
@@ -64,6 +66,8 @@ class ContestSite(object):
         return r.text
 
     def parse_page(self, page):
+        """parse task page"""
+        """return: testcases [[input_str, output_str], ...]"""
         raise NotImplementedError
 
 
@@ -76,7 +80,15 @@ class AtCoder(ContestSite):
         payload = {"name": self.username,
                    "password": self.password}
         url = AtCoder.login_url.format(contest=self.contest)
-        self.s.post(url, payload)
+        r = self.s.post(url, payload)
+        if r.status_code != 200:
+            warnings.warn("Login request returns status code {}".format(r.status_code),
+                          RuntimeWarning)
+        else:
+            if "X-ImoJudge-SimpleAuth" in r.headers and \
+               r.headers["X-ImoJudge-SimpleAuth"] == "Passed":
+                return True
+        return False
 
     def parse_page(self, page):
         testcases = []

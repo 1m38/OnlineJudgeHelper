@@ -1,3 +1,7 @@
+2017-05-28    <masaya@FS-VB-arch>
+
+	* oj_sites.py: warn if fail to login
+
 2017-05-27    <masaya@FS-VB-arch>
 
 	* oj_sites.py: Refactoring
