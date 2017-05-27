@@ -24,16 +24,26 @@ def detect_site(url):
             return sitename
 
 
-class AtCoder(object):
-    url_format = "http://{contest}.contest.atcoder.jp/tasks/{pnumber}"
-    login_url = "https://{contest}.contest.atcoder.jp/login"
+class ContestSite(object):
+    url_format = None
+    login_url = None
+    site_name = None
+
     def __init__(self, url, config):
         self.url = url
         self.contest, self.pnumber = self.parse_url()
-        self.username = config["sites"]["AtCoder"]["username"]
-        self.password = config["sites"]["AtCoder"]["password"]
+        if self.site_name is None:
+            raise NotImplementedError
         self.s = requests.Session()
+        if self.site_name not in config["sites"]:
+            raise RuntimeWarning(
+                "User credential for contest site {} not in config.json".format(self.site_name))
+        else:
+            self.username = config["sites"][self.site_name]["username"]
+            self.password = config["sites"][self.site_name]["password"]
         self.login()
+        # if login failed:
+        #     raise RuntimeWarning("Login failed.")
         self.page = self.get()
         self.testcases = self.parse_page(self.page)
 
@@ -41,18 +51,32 @@ class AtCoder(object):
         return self.contest, self.pnumber, self.testcases
 
     def parse_url(self):
-        r = parse.parse(AtCoder.url_format, self.url)
+        if self.url_format is None:
+            raise NotImplementedError
+        r = parse.parse(self.url_format, self.url)
         return r["contest"], r["pnumber"]
+
+    def login(self):
+        raise NotImplementedError
+
+    def get(self):
+        r = self.s.get(self.url)
+        return r.text
+
+    def parse_page(self, page):
+        raise NotImplementedError
+
+
+class AtCoder(ContestSite):
+    url_format = "http://{contest}.contest.atcoder.jp/tasks/{pnumber}"
+    login_url = "https://{contest}.contest.atcoder.jp/login"
+    site_name = "AtCoder"
 
     def login(self):
         payload = {"name": self.username,
                    "password": self.password}
         url = AtCoder.login_url.format(contest=self.contest)
         self.s.post(url, payload)
-
-    def get(self):
-        r = self.s.get(self.url)
-        return r.text
 
     def parse_page(self, page):
         testcases = []

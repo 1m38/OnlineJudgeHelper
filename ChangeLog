@@ -1,3 +1,8 @@
+2017-05-27    <masaya@FS-VB-arch>
+
+	* oj_sites.py: Refactoring
+	複数contest siteに対応できるように基底クラスContestSiteを作成
+
 2017-05-01  Masaya Uno  <masaya@FS-MC-pca308>
 
 	* config_sample.json: add node.js
