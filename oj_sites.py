@@ -19,7 +19,8 @@ import warnings
 def detect_site(url):
     re_list = {
         "AtCoder": re.compile(r"http://.*\.atcoder\.jp"),
-        "Codeforces": re.compile(r"http://codeforces\.com")
+        "Codeforces": re.compile(r"http://codeforces\.com"),
+        "Yukicoder": re.compile(r"http://yukicoder\.me")
     }
     for sitename, pattern in re_list.items():
         if pattern.match(url):
@@ -140,5 +141,24 @@ class Codeforces(ContestSite):
                 br.replace_with("\n")
             str_i = pre_i.text
             str_o = pre_o.text
+            testcases.append([str_i, str_o])
+        return testcases
+
+
+class Yukicoder(ContestSite):
+    url_format = "http://yukicoder.me/problems/no/{pnumber}"
+    login_url = None
+    site_name = "yukicoder"
+
+    def parse_page(self, page):
+        testcases = []
+        soup = BeautifulSoup(page, "html.parser")
+        samples = soup.find_all("div", class_="sample")
+        for sample in samples:
+            pres = sample.find_all("pre")
+            pre_i = pres[0]
+            pre_o = pres[1]
+            str_i = pre_i.text + "\n"
+            str_o = pre_o.text + "\n"
             testcases.append([str_i, str_o])
         return testcases

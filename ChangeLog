@@ -5,6 +5,7 @@
 	(Codeforces): add
 	won't attempt to login if login_url is None
 	if contest name is None, use site_name as contest name
+	(Yukicoder): add
 
 2017-05-27    <masaya@FS-VB-arch>
 
