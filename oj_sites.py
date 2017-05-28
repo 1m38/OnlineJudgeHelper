@@ -30,7 +30,6 @@ class ContestSite(object):
     url_format = None
     login_url = None
     site_name = None
-    do_login = False
 
     def __init__(self, url, config):
         self.url = url
@@ -38,7 +37,7 @@ class ContestSite(object):
         if self.site_name is None:
             raise NotImplementedError
         self.s = requests.Session()
-        if self.do_login:
+        if self.login_url is not None:
             self._login(config)
         self.page = self.get()
         self.testcases = self.parse_page(self.page)
@@ -85,7 +84,6 @@ class AtCoder(ContestSite):
     url_format = "http://{contest}.contest.atcoder.jp/tasks/{pnumber}"
     login_url = "https://{contest}.contest.atcoder.jp/login"
     site_name = "AtCoder"
-    do_login = True
 
     def login(self):
         payload = {"name": self.username,
@@ -119,7 +117,8 @@ class AtCoder(ContestSite):
 
 class Codeforces(ContestSite):
     url_format = "http://codeforces.com/contest/{contest}/problem/{pnumber}"
-    login_url = "http://codeforces.com/enter"
+    # login_url = "http://codeforces.com/enter"
+    login_url = None
     site_name = "Codeforces"
 
     def parse_page(self, page):

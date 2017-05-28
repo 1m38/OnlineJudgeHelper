@@ -3,6 +3,7 @@
 	* oj_sites.py: warn if fail to login
 	(ContestSite): can choose to login or not
 	(Codeforces): add
+	won't attempt to login if login_url is None
 
 2017-05-27    <masaya@FS-VB-arch>
 
