@@ -29,6 +29,7 @@ class ContestSite(object):
     url_format = None
     login_url = None
     site_name = None
+    do_login = False
 
     def __init__(self, url, config):
         self.url = url
@@ -36,16 +37,8 @@ class ContestSite(object):
         if self.site_name is None:
             raise NotImplementedError
         self.s = requests.Session()
-        if self.site_name not in config["sites"]:
-            warnings.warn(
-                "User credential for contest site {} not in config.json".format(self.site_name),
-                RuntimeWarning)
-        else:
-            self.username = config["sites"][self.site_name]["username"]
-            self.password = config["sites"][self.site_name]["password"]
-        login_status = self.login()
-        if not login_status:
-            warnings.warn("Failed to login", RuntimeWarning)
+        if self.do_login:
+            self._login(config)
         self.page = self.get()
         self.testcases = self.parse_page(self.page)
 
@@ -57,6 +50,22 @@ class ContestSite(object):
             raise NotImplementedError
         r = parse.parse(self.url_format, self.url)
         return r["contest"], r["pnumber"]
+
+    def _login(self, config):
+        if self.site_name not in config["sites"]:
+            warnings.warn(
+                "User credential for contest site {} not in config.json".format(self.site_name),
+                RuntimeWarning)
+            return
+        else:
+            self.username = config["sites"][self.site_name]["username"]
+            self.password = config["sites"][self.site_name]["password"]
+        try:
+            login_status = self.login()
+            if not login_status:
+                raise RuntimeWarning("Failed to login")
+        except:
+            warnings.warn("Failed to login", RuntimeWarning)
 
     def login(self):
         raise NotImplementedError
@@ -75,11 +84,12 @@ class AtCoder(ContestSite):
     url_format = "http://{contest}.contest.atcoder.jp/tasks/{pnumber}"
     login_url = "https://{contest}.contest.atcoder.jp/login"
     site_name = "AtCoder"
+    do_login = True
 
     def login(self):
         payload = {"name": self.username,
                    "password": self.password}
-        url = AtCoder.login_url.format(contest=self.contest)
+        url = self.login_url.format(contest=self.contest)
         r = self.s.post(url, payload)
         if r.status_code != 200:
             warnings.warn("Login request returns status code {}".format(r.status_code),
