@@ -18,7 +18,8 @@ import warnings
 
 def detect_site(url):
     re_list = {
-        "AtCoder": re.compile(r"http://.*\.atcoder\.jp")
+        "AtCoder": re.compile(r"http://.*\.atcoder\.jp"),
+        "Codeforces": re.compile(r"http://codeforces\.com")
     }
     for sitename, pattern in re_list.items():
         if pattern.match(url):
@@ -113,4 +114,28 @@ class AtCoder(ContestSite):
             input_str = pres[i].text.replace("\r\n", "\n").strip() + "\n"
             output_str = pres[i+1].text.replace("\r\n", "\n").strip() + "\n"
             testcases.append([input_str, output_str])
+        return testcases
+
+
+class Codeforces(ContestSite):
+    url_format = "http://codeforces.com/contest/{contest}/problem/{pnumber}"
+    login_url = "http://codeforces.com/enter"
+    site_name = "Codeforces"
+
+    def parse_page(self, page):
+        testcases = []
+        soup = BeautifulSoup(page, "html.parser")
+        sample_test = soup.select("div.sample-test")[0]
+        inputs = sample_test.find_all("div", class_="input")
+        outputs = sample_test.find_all("div", class_="output")
+        for i, o in zip(inputs, outputs):
+            pre_i = i.find("pre")
+            pre_o = o.find("pre")
+            for br in pre_i.find_all("br"):
+                br.replace_with("\n")
+            for br in pre_o.find_all("br"):
+                br.replace_with("\n")
+            str_i = pre_i.text
+            str_o = pre_o.text
+            testcases.append([str_i, str_o])
         return testcases

@@ -2,6 +2,7 @@
 
 	* oj_sites.py: warn if fail to login
 	(ContestSite): can choose to login or not
+	(Codeforces): add
 
 2017-05-27    <masaya@FS-VB-arch>
 
