@@ -32,10 +32,12 @@ class ContestSite(object):
     site_name = None
 
     def __init__(self, url, config):
-        self.url = url
-        self.contest, self.pnumber = self.parse_url()
         if self.site_name is None:
             raise NotImplementedError
+        self.url = url
+        self.contest, self.pnumber = self.parse_url()
+        if self.contest is None:
+            self.contest = self.site_name
         self.s = requests.Session()
         if self.login_url is not None:
             self._login(config)
@@ -49,7 +51,9 @@ class ContestSite(object):
         if self.url_format is None:
             raise NotImplementedError
         r = parse.parse(self.url_format, self.url)
-        return r["contest"], r["pnumber"]
+        contest = r["contest"] if "contest" in r.named.keys() else None
+        pnumber = r["pnumber"] if "pnumber" in r.named.keys() else None
+        return contest, pnumber
 
     def _login(self, config):
         if self.site_name not in config["sites"]:
