@@ -1,3 +1,7 @@
+2017-07-09    <masaya@FS-VB-arch>
+
+	* config_sample.json: python -> python3
+
 2017-05-28    <masaya@FS-VB-arch>
 
 	* oj_sites.py: warn if fail to login

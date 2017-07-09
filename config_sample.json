@@ -6,7 +6,8 @@
 
     "commands": {
 	"py":{
-	    "test_cmd": "python {fname}"
+	    "_comment": "If you prefer python2, change this.",
+	    "test_cmd": "python3 {fname}"
 	},
 	"c":{
 	    "compile_cmd": "gcc -Wall -lm -o {oname} \"{fname}\"",
