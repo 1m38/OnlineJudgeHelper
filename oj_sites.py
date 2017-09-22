@@ -17,11 +17,11 @@ import warnings
 
 
 def detect_site(url):
-    re_list = {
-        "AtCoder": re.compile(r"http://.*\.atcoder\.jp"),
-        "Codeforces": re.compile(r"http://codeforces\.com"),
-        "Yukicoder": re.compile(r"http://yukicoder\.me")
-    }
+    re_list = collections.OrderedDict()
+    re_list["AtCoderBeta"] = re.compile(r"https?://.*\.atcoder\.jp")
+    re_list["AtCoder"] = re.compile(r"https?://.*\.atcoder\.jp")
+    re_list["Codeforces"] = re.compile(r"http://codeforces\.com")
+    re_list["Yukicoder"] = re.compile(r"http://yukicoder\.me")
     for sitename, pattern in re_list.items():
         if pattern.match(url):
             return sitename
@@ -83,6 +83,49 @@ class ContestSite(object):
         """parse task page"""
         """return: testcases [[input_str, output_str], ...]"""
         raise NotImplementedError
+
+
+class AtCoderBeta(ContestSite):
+    url_format = "https://beta.atcoder.jp/contests/{contest}/tasks/{pnumber}"
+    login_url = "https://beta.atcoder.jp/login"
+    site_name = "AtCoder"
+
+    def login(self):
+        payload = {"username": self.username,
+                   "password": self.password}
+        url = self.login_url
+        # get csrf-token
+        r = self.s.get(url)
+        soup = BeautifulSoup(r.text, "html.parser")
+        rform = soup.find_all("form")[-1]
+        tokens = rform.find_all("input", type="hidden")
+        for token in tokens:
+            payload[token.attrs["name"]] = token.attrs["value"]
+        r = self.s.post(url, payload)
+        if r.status_code != 200:
+            warnings.warn("Login request returns status code {}".format(r.status_code),
+                          RuntimeWarning)
+        elif r.url == "https://beta.atcoder.jp/login":
+            warnings.warn("Failed to login. Is username or password incorrect?".format(r.status_code),
+                          RuntimeWarning)
+        else:
+            return True
+        return False
+
+    def parse_page(self, page):
+        testcases = []
+        soup = BeautifulSoup(page, "html.parser")
+        task = soup.find("div", {"id": "task-statement"})
+        task_ja = task.find("span", {"class": "lang-ja"})
+        if not task_ja:
+            task_ja = task
+        pres = task_ja.findAll("pre")
+        n_pres = len(pres)
+        for i in range(1, n_pres, 2):
+            input_str = pres[i].text.replace("\r\n", "\n").strip() + "\n"
+            output_str = pres[i+1].text.replace("\r\n", "\n").strip() + "\n"
+            testcases.append([input_str, output_str])
+        return testcases
 
 
 class AtCoder(ContestSite):

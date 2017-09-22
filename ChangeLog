@@ -1,3 +1,7 @@
+2017-09-23  FS-PC-win10  <masaya@FS-PC-win10>
+
+	* oj_sites.py: add AtCoderBeta
+
 2017-07-09    <masaya@FS-VB-arch>
 
 	* config_sample.json: python -> python3
