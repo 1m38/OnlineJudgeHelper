@@ -43,7 +43,13 @@ class ContestSite(object):
         if self.login_url is not None:
             self._login(config)
         self.page = self.get()
-        self.testcases = self.parse_page(self.page)
+        try:
+            self.testcases = self.parse_page(self.page)
+        except:
+            warnings.warn(
+                "Failed to load testcases, so create a blank sample file.",
+                RuntimeWarning)
+            self.testcases = []
 
     def result(self):
         return self.contest, self.pnumber, self.testcases
