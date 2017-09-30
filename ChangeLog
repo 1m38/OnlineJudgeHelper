@@ -1,5 +1,7 @@
 2017-09-30  Masaya  <masaya@FS-vb-ub1704>
 
+	* templates/template.py: modified
+
 	* oj_sites.py (ContestSite.__init__): testcaseのloadに失敗した場合、空のsampleファイルを作る
 
 2017-09-23  FS-PC-win10  <masaya@FS-PC-win10>
