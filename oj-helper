@@ -54,6 +54,8 @@ def input_lines(prompt=None):
 
 
 def setup(args, config):
+    if args.lang is None:
+        args.lang = config["default_language"]
     if args.url:
         sitename = oj_sites.detect_site(args.url)
         testcase_generator = getattr(oj_sites, sitename)(args.url, config)
@@ -106,7 +108,8 @@ def setup(args, config):
 
 
 
-def add_test(args, qid):
+def add_test(args, config):
+    qid = os.path.basename(os.getcwd())
     testcase = TestCase(qid + ".sample")
     test_id = len(testcase.testcases)
     test_str = input_lines(prompt="TestCase {}:".format(test_id))
@@ -156,7 +159,11 @@ def chk_output_floatError(stdout, expect, err):
             result *= lo == le
     return result
 
-def run_test(args, config, qid):
+def run_test(args, config):
+    if args.lang is None:
+        args.lang = config["default_language"]
+    qid = os.path.basename(os.getcwd())
+
     if args.file_name:
         fname = args.file_name
     else:
@@ -271,34 +278,38 @@ def run_test(args, config, qid):
     print(" Passed: {} / {}".format(n_passed, n_tests))
 
 
-def main(args, config):
-    if args.lang is None:
-        args.lang = config["default_language"]
-    if args.mode in ["setup", "s"]:
-        setup(args, config)
-    else:
-        qid = os.path.basename(os.getcwd())
-        if args.mode in ["add-test", "a"]:
-            add_test(args, qid)
-        elif args.mode in ["test", "t"]:
-            run_test(args, config, qid)
-
-
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument("mode", type=str,
-                        choices=["s", "setup", "a", "add-test", "t", "test"])
-    parser.add_argument("-l", "--lang", default=None)
-    parser.add_argument("-c", "--contest-name", default="")
-    parser.add_argument("-p", "--problem-number", default=None)
-    parser.add_argument("-u", "--url", default="",
-                        help="URL for question page (ignore --contest-name and --problem number)")
-    parser.add_argument("-f", "--file-name", default=None)
-    parser.add_argument("-t", "--time-limit", type=int, default=2)
-    parser.add_argument("-e", "--float-error", type=float, default=1e-4)
-    parser.add_argument("-v", "--verbose", type=int, default=2,
-                        help="0: only show verdicts, 1: show outputs of not succeeded cases 2: show outputs of all cases")
+    subparsers = parser.add_subparsers()
+
+    subparser_setup = subparsers.add_parser("setup", aliases=["s"],
+                                            help="setup a problem directory")
+    subparser_setup.set_defaults(func=setup)
+    subparser_setup.add_argument("-l", "--lang", default=None,
+                                 help="programming language to write your answer")
+    subparser_setup.add_argument("-c", "--contest-name", default="")
+    subparser_setup.add_argument("-p", "--problem-number", default=None)
+    subparser_setup.add_argument("-u", "--url", default="",
+                                 help="URL for question page (ignore --contest-name and --problem number)")
+    subparser_setup.add_argument("-f", "--file-name", default=None,
+                                 help="create a file with this name in the problem directory.")
+
+    subparser_add = subparsers.add_parser("add-test", aliases=["a"],
+                                          help="add a test case")
+    subparser_add.set_defaults(func=add_test)
+
+    subparser_test = subparsers.add_parser("test", aliases=["t"],
+                                           help="run test")
+    subparser_test.set_defaults(func=run_test)
+    subparser_test.add_argument("-f", "--file-name", default=None)
+    subparser_test.add_argument("-l", "--lang", default=None,
+                                help="programming language to write your answer")
+    subparser_test.add_argument("-t", "--time-limit", type=int, default=2)
+    subparser_test.add_argument("-e", "--float-error", type=float, default=1e-4)
+    subparser_test.add_argument("-v", "--verbose", type=int, default=2,
+                                help="0: only show verdicts, 1: show outputs of not succeeded cases 2: show outputs of all cases")
+
     args = parser.parse_args()
 
     script_dir = os.path.dirname(os.path.realpath(__file__))
@@ -309,4 +320,4 @@ if __name__ == "__main__":
         print("Couldn't read config.json file.")
         config = None
 
-    main(args, config)
+    args.func(args, config)
