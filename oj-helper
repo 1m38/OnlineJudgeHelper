@@ -88,7 +88,8 @@ def setup(args, config):
     template_file = os.path.join(template_dir, "template.{}".format(args.lang))
     if args.file_name is not None:
         script_path = args.file_name
-    elif "filename" in config["commands"][args.lang]:
+    elif args.lang in config["commands"] and \
+         "filename" in config["commands"][args.lang]:
         script_path = config["commands"][args.lang]["filename"]
     else:
         script_path = "{}.{}".format(pnumber, args.lang)

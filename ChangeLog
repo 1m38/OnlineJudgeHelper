@@ -1,6 +1,7 @@
 2018-06-17  Masaya  <masaya@FS-VB-ubm1804>
 
 	* oj-helper (setup): すでに解答ファイルが存在するなら、上書きしない
+	(setup): 不明な言語名を指定されても落ちないように
 
 2018-06-02  Masaya  <masaya@FS-VB-ubm1804>
 
