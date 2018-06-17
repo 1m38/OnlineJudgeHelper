@@ -96,11 +96,13 @@ def setup(args, config):
     if not os.path.exists(dirname):
         os.makedirs(dirname)
     if os.path.exists(template_file):
-        shutil.copyfile(template_file, script_path)
+        # do not overwrite existing source file
+        if not os.path.exists(script_path):
+            shutil.copyfile(template_file, script_path)
+            print("Created source code file: {}".format(script_path))
     else:
-        print("Template file not found. A blank file is created.")
-        with open(script_path, "w") as f:
-            f.write("")
+        print("Template file not found. A blank file is created: {}".format(script_path))
+        open(script_path, "a").close()
     testcase_path = os.path.join(dirname, "{}.sample".format(pnumber))
     if not os.path.exists(testcase_path):
         testcase = TestCase(testcase_path, testcases, url)

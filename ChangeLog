@@ -1,3 +1,7 @@
+2018-06-17  Masaya  <masaya@FS-VB-ubm1804>
+
+	* oj-helper (setup): すでに解答ファイルが存在するなら、上書きしない
+
 2018-06-02  Masaya  <masaya@FS-VB-ubm1804>
 
 	* oj-helper: subcommand化 (main関数撤廃)
