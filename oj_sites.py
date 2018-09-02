@@ -18,7 +18,8 @@ import warnings
 
 def detect_site(url):
     re_list = collections.OrderedDict()
-    re_list["AtCoderBeta"] = re.compile(r"https?://.*\.atcoder\.jp")
+    # re_list["AtCoderBeta"] = re.compile(r"https?://.*\.atcoder\.jp")
+    re_list["AtCoderBeta"] = re.compile(r"https?://beta\.atcoder\.jp")
     re_list["AtCoder"] = re.compile(r"https?://.*\.atcoder\.jp")
     re_list["Codeforces"] = re.compile(r"http://codeforces\.com")
     re_list["Yukicoder"] = re.compile(r"http://yukicoder\.me")
@@ -135,7 +136,7 @@ class AtCoderBeta(ContestSite):
 
 
 class AtCoder(ContestSite):
-    url_format = "http://{contest}.contest.atcoder.jp/tasks/{pnumber}"
+    url_format = "https://{contest}.contest.atcoder.jp/tasks/{pnumber}"
     login_url = "https://{contest}.contest.atcoder.jp/login"
     site_name = "AtCoder"
 
