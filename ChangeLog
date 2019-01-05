@@ -1,3 +1,7 @@
+2019-01-06  Masaya Uno  <masaya@FS-VB-ubm1804>
+
+	* requirements.txt: version up
+
 2018-09-02  Masaya  <masaya@FS-VB-ubm1804>
 
 	* oj_sites.py: enabled AtCoder(not beta)
