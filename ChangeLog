@@ -1,5 +1,7 @@
 2019-01-06  Masaya Uno  <masaya@FS-VB-ubm1804>
 
+	* oj-helper (setup): show warning when failed to detect site name from url
+
 	* requirements.txt: version up
 
 2018-09-02  Masaya  <masaya@FS-VB-ubm1804>

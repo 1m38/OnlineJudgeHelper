@@ -58,6 +58,7 @@ def setup(args, config):
         args.lang = config["default_language"]
     if args.url:
         sitename = oj_sites.detect_site(args.url)
+        assert sitename is not None, "Failed to detect site name."
         testcase_generator = getattr(oj_sites, sitename)(args.url, config)
         contest, pnumber, testcases = testcase_generator.result()
         cur_dir = os.getcwd().split("/")
