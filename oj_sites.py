@@ -93,7 +93,7 @@ class ContestSite(object):
 
 class AtCoderBeta(ContestSite):
     url_format = "https://atcoder.jp/contests/{contest}/tasks/{pnumber}"
-    login_url = "https://beta.atcoder.jp/login"
+    login_url = "https://atcoder.jp/login"
     site_name = "AtCoder"
 
     def login(self):
@@ -111,7 +111,7 @@ class AtCoderBeta(ContestSite):
         if r.status_code != 200:
             warnings.warn("Login request returns status code {}".format(r.status_code),
                           RuntimeWarning)
-        elif r.url == "https://beta.atcoder.jp/login":
+        elif r.url == "https://atcoder.jp/login":
             warnings.warn("Failed to login. Is username or password incorrect?".format(r.status_code),
                           RuntimeWarning)
         else:
