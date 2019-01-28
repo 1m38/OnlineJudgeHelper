@@ -1,3 +1,58 @@
+2019-01-28  Masaya Uno  <masaya@FS-VB-ubm1804>
+
+	* oj_sites.py (AtCoderBeta): urlを更新(ログインできない問題を修正)
+
+2019-01-06  Masaya Uno  <masaya@FS-VB-ubm1804>
+
+	* oj_sites.py: update url format of AtCoder(Beta)
+
+	* oj-helper (setup): show warning when failed to detect site name from url
+
+	* requirements.txt: version up
+
+2018-09-02  Masaya  <masaya@FS-VB-ubm1804>
+
+	* oj_sites.py: enabled AtCoder(not beta)
+
+	* templates/template.py: add macros II, MI
+
+2018-06-17  Masaya  <masaya@FS-VB-ubm1804>
+
+	* oj-helper (setup): すでに解答ファイルが存在するなら、上書きしない
+	(setup): 不明な言語名を指定されても落ちないように
+
+2018-06-02  Masaya  <masaya@FS-VB-ubm1804>
+
+	* oj-helper: subcommand化 (main関数撤廃)
+
+2017-09-30  Masaya  <masaya@FS-vb-ub1704>
+
+	* templates/template.py: modified
+
+	* oj_sites.py (ContestSite.__init__): testcaseのloadに失敗した場合、空のsampleファイルを作る
+
+2017-09-23  FS-PC-win10  <masaya@FS-PC-win10>
+
+	* oj_sites.py: add AtCoderBeta
+
+2017-07-09    <masaya@FS-VB-arch>
+
+	* config_sample.json: python -> python3
+
+2017-05-28    <masaya@FS-VB-arch>
+
+	* oj_sites.py: warn if fail to login
+	(ContestSite): can choose to login or not
+	(Codeforces): add
+	won't attempt to login if login_url is None
+	if contest name is None, use site_name as contest name
+	(Yukicoder): add
+
+2017-05-27    <masaya@FS-VB-arch>
+
+	* oj_sites.py: Refactoring
+	複数contest siteに対応できるように基底クラスContestSiteを作成
+
 2017-05-01  Masaya Uno  <masaya@FS-MC-pca308>
 
 	* config_sample.json: add node.js

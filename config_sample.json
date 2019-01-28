@@ -6,7 +6,8 @@
 
     "commands": {
 	"py":{
-	    "test_cmd": "python {fname}"
+	    "_comment": "If you prefer python2, change this.",
+	    "test_cmd": "python3 {fname}"
 	},
 	"c":{
 	    "compile_cmd": "gcc -Wall -lm -o {oname} \"{fname}\"",
@@ -14,6 +15,10 @@
 	},
 	"cpp":{
 	    "compile_cmd": "g++ -Wall -lm -o {oname} \"{fname}\"",
+	    "test_cmd": "./{oname}"
+	},
+	"14.cpp":{
+	    "compile_cmd": "g++ -std=gnu++1y -Wall -lm -o {oname} \"{fname}\"",
 	    "test_cmd": "./{oname}"
 	},
 	"98.cpp":{
