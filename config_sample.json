@@ -17,6 +17,10 @@
 	    "compile_cmd": "g++ -Wall -lm -o {oname} \"{fname}\"",
 	    "test_cmd": "./{oname}"
 	},
+	"14.cpp":{
+	    "compile_cmd": "g++ -std=gnu++1y -Wall -lm -o {oname} \"{fname}\"",
+	    "test_cmd": "./{oname}"
+	},
 	"98.cpp":{
 	    "comment": "C++98(for POJ)",
 	    "compile_cmd": "g++ -Wall -lm -std=c++98 -pedantic -o {oname} \"{fname}\"",
