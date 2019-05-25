@@ -125,11 +125,17 @@ class AtCoderBeta(ContestSite):
         task_ja = task.find("span", {"class": "lang-ja"})
         if not task_ja:
             task_ja = task
-        pres = task_ja.findAll("pre")
-        n_pres = len(pres)
-        for i in range(1, n_pres, 2):
-            input_str = pres[i].text.replace("\r\n", "\n").strip() + "\n"
-            output_str = pres[i+1].text.replace("\r\n", "\n").strip() + "\n"
+        sections = task_ja.find_all("section")
+        # <section>のうち、「Sample Input」or「入力例」から始まる<h3>を持つものを抽出
+        s_sample_inputs = \
+            [s for s in sections if s.h3 and "Sample Input" in s.h3.text or "入力例" in s.h3.text]
+        s_sample_outputs = \
+            [s for s in sections if s.h3 and "Sample Output" in s.h3.text or "出力例" in s.h3.text]
+        for s_in, s_out in zip(s_sample_inputs, s_sample_outputs):
+            if not (s_in.find("pre") and s_out.find("pre")):
+                continue
+            input_str  = s_in.pre.text.replace("\r\n", "\n").strip() + "\n"
+            output_str = s_out.pre.text.replace("\r\n", "\n").strip() + "\n"
             testcases.append([input_str, output_str])
         return testcases
 
